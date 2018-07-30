@@ -12,8 +12,8 @@ class Admin implements RoleTypeInterface
     public function getCabinets()
     {
         return [
-            new Cabinet(1, 'Организация', '/public/images/cabinets/40.png', 'all_organizations'),
-            new Cabinet(2, 'Проблемы', '/public/images/cabinets/40.png', 'all_problems'),
+            new Cabinet(1, 'Организация', 'organizations', 'all_organizations'),
+            new Cabinet(2, 'Проблемы', 'problems', 'all_problems'),
         ];
     }
 }

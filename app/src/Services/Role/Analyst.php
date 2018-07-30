@@ -12,7 +12,7 @@ class Analyst implements RoleTypeInterface
     public function getCabinets()
     {
         return [
-            new Cabinet(1, 'Аналитика', '/public/images/cabinets/40.png', 'analytics')
+            new Cabinet(1, 'Аналитика', 'analytics', 'analytics')
         ];
     }
 }

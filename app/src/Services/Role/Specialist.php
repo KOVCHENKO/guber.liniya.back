@@ -12,8 +12,8 @@ class Specialist implements RoleTypeInterface
     public function getCabinets()
     {
         return [
-            new Cabinet(1, 'Заявки', '/public/images/cabinets/40.png', 'specialist_applications'),
-            new Cabinet(2, 'Организации', '/public/images/cabinets/40.png', 'specialist_organizations')
+            new Cabinet(1, 'Заявки', 'applications', 'specialist_applications'),
+            new Cabinet(2, 'Организации', 'organizations', 'specialist_organizations')
         ];
     }
 }
