@@ -23,7 +23,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/login', 'Auth\LoginController@login');
 
 Route::group(['middleware' => 'jwt.auth'], function () {
-    Route::get('/get_cabinets/{user_id}', 'Common\DesktopController@getCabinets');
-    Route::get('/get_user', 'Common\UserController@getUser');
-//    Route::post('/get_user', 'Common\UserController@getUser');
+
 });
+
+Route::get('/get_user', 'Common\UserController@getUser');
+Route::get('/get_cabinets/{user_id}', 'Common\DesktopController@getCabinets');
+Route::get('/organizations/all', 'Functional\OrganizationController@getAll');
+Route::post('/organizations/create', 'Functional\OrganizationController@create');

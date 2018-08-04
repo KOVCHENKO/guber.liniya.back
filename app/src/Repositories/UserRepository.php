@@ -16,11 +16,21 @@ class UserRepository
     }
 
 
+    /**
+     * @param int $userId
+     * @return User
+     * Получить пользователя по id
+     */
     public function getById(int $userId): User
     {
         return $this->user->find($userId);
     }
 
+    /**
+     * @param string $email
+     * @return User
+     * Получить пользователя по email
+     */
     public function getByEmail(string $email): User
     {
         return $this->user
@@ -28,11 +38,21 @@ class UserRepository
             ->first();
     }
 
+    /**
+     * @param $userId
+     * @return Role
+     * Получить роль пользователя
+     */
     public function getUserRole($userId): Role
     {
         return $this->user->find($userId)->role;
     }
 
+    /**
+     * @param $data
+     * @return User
+     * Создать пользователя\
+     */
     public function create($data): User
     {
         $user = new $this->user;

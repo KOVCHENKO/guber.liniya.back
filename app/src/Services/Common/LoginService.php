@@ -4,7 +4,6 @@ namespace App\src\Services\Common;
 
 
 use App\src\Repositories\UserRepository;
-use Exception;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class LoginService
@@ -18,23 +17,6 @@ class LoginService
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
-    }
-
-    /**
-     * @param $data
-     * @return \App\src\Models\User
-     * data - contains - email, password
-     * @throws Exception
-     */
-    public function login($data)
-    {
-        $user = $this->userRepository->getByEmail($data['email']);
-
-        if(($data['password']) == $user->password) {
-            return $user;
-        }
-
-        throw new Exception('user has not been found');
     }
 
 
