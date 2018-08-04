@@ -5,11 +5,11 @@ namespace App\src\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Organization extends Model
+class ProblemType extends Model
 {
-    protected $table = 'organizations';
+    protected $table = 'problem_types';
 
     protected $fillable = [
-        'name', 'description', 'pid'
+        'name', 'description'
     ];
 }
