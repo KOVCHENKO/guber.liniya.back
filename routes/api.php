@@ -28,6 +28,10 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
 Route::get('/get_user', 'Common\UserController@getUser');
 Route::get('/get_cabinets/{user_id}', 'Common\DesktopController@getCabinets');
+
 Route::get('/organizations/all', 'Functional\OrganizationController@getAll');
 Route::post('/organizations/create', 'Functional\OrganizationController@create');
+
 Route::get('/problem_types/all', 'Functional\ProblemTypeController@getAll');
+Route::post('/problem_types/create', 'Functional\ProblemTypeController@create');
+Route::get('/problem_types/get_by_id/{id}', 'Functional\ProblemTypeController@getByid');
