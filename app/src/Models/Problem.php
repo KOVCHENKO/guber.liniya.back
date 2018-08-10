@@ -12,4 +12,10 @@ class Problem extends Model
     protected $fillable = [
         'name', 'description', 'problem_type_id'
     ];
+
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class, 'problems_organizations');
+    }
+
 }

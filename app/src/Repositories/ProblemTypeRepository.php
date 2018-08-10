@@ -7,15 +7,15 @@ use App\src\Models\ProblemType;
 
 class ProblemTypeRepository
 {
-    protected $problem;
+    protected $problemType;
 
     /**
      * ProblemTypeRepository constructor.
-     * @param $problem
+     * @param $problemType
      */
-    public function __construct(ProblemType $problem)
+    public function __construct(ProblemType $problemType)
     {
-        $this->problem = $problem;
+        $this->problemType = $problemType;
     }
 
     /**
@@ -24,7 +24,7 @@ class ProblemTypeRepository
      */
     public function getAll()
     {
-        return $this->problem->all();
+        return $this->problemType->all();
     }
 
     /**
@@ -34,7 +34,7 @@ class ProblemTypeRepository
      */
     public function create($problemType)
     {
-        return $this->problem->create($problemType);
+        return $this->problemType->create($problemType);
     }
 
     /**
@@ -44,7 +44,17 @@ class ProblemTypeRepository
      */
     public function getById($id)
     {
-        return $this->problem->find($id);
+        return $this->problemType
+            ->with('problems')
+            ->where('id', $id)
+            ->first();
+    }
+
+    public function getAllWithProblems()
+    {
+        return $this->problemType
+            ->with('children')
+            ->get();
     }
 
 

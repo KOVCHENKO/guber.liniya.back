@@ -12,4 +12,9 @@ class Organization extends Model
     protected $fillable = [
         'name', 'description', 'pid'
     ];
+
+    public function problems()
+    {
+        return $this->belongsToMany(Problem::class, 'problems_organizations');
+    }
 }
