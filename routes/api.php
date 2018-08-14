@@ -45,5 +45,10 @@ Route::prefix('/problem_types/')->namespace('Functional')->group(function(){
     Route::get('all_with_problems/{organization_id}', 'ProblemTypeController@getAllWithQuestions');
 });
 
+Route::prefix('/claims/')->namespace('Functional')->group(function(){
+    Route::get('all', 'ClaimController@getAll');
+    Route::post('create', 'ClaimController@create');
+});
+
 Route::post('/problems/create', 'Functional\ProblemController@create');
 

@@ -15,6 +15,7 @@ class Organization extends Model
 
     public function problems()
     {
-        return $this->belongsToMany(Problem::class, 'problems_organizations');
+        return $this->belongsToMany(Problem::class,
+            'problems_organizations');
     }
 }

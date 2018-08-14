@@ -91,12 +91,12 @@ class OrganizationRepository
      * @param $problemId
      * @param $organizationId
      * Прикрепить проблему к организации
-     * @return
+     * @return void
      */
     public function attachProblem($problemId, $organizationId)
     {
-        $organization = $this->getById($organizationId);
-        return $organization->problems()->attach($problemId);
+        $organization = $this->organization->getById($organizationId);
+        $organization->problems()->attach($problemId);
     }
 
     /**
@@ -107,7 +107,21 @@ class OrganizationRepository
      */
     public function detachProblem($problemId, $organizationId)
     {
-        $organization = $this->getById($organizationId);
-        return $organization->problems()->detach($problemId);
+        $organization = $this->organization->getById($organizationId);
+        $organization->problems()->detach($problemId);
+    }
+
+    /**
+     * @param $problemId
+     * @return \Illuminate\Support\Collection
+     * Получить организаци, которые могут выполнить данную проблему
+     */
+    public function getOrganizationsByProblem($problemId)
+    {
+        return DB::table('organizations')
+            ->join('problems_organizations',
+                'problems_organizations.organization_id', '=', 'organizations.id')
+            ->where('problems_organizations.problem_id', '=', $problemId)
+            ->get();
     }
 }

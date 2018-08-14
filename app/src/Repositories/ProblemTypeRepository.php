@@ -24,7 +24,9 @@ class ProblemTypeRepository
      */
     public function getAll()
     {
-        return $this->problemType->all();
+        return $this->problemType
+            ->with('problems')
+            ->get();
     }
 
     /**
