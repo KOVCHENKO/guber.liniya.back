@@ -50,5 +50,10 @@ Route::prefix('/claims/')->namespace('Functional')->group(function(){
     Route::post('create', 'ClaimController@create');
 });
 
+Route::prefix('/specialists/')->namespace('Functional')->group(function() {
+   Route::get('get_specialists_of_organization/{organization_id}', 'SpecialistController@getSpecialistsOfOrganization');
+   Route::post('create_specialist/{organization_id}', 'SpecialistController@createSpecialist');
+});
+
 Route::post('/problems/create', 'Functional\ProblemController@create');
 

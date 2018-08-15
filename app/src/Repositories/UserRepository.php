@@ -5,6 +5,8 @@ namespace App\src\Repositories;
 
 use App\src\Models\Role;
 use App\src\Models\User;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository
 {
@@ -63,6 +65,46 @@ class UserRepository
         $user->save();
 
         return $user;
+    }
+
+    /**
+     * @param $organizationId
+     * Поулчить всех специалистов организации
+     * @return \Illuminate\Support\Collection
+     */
+    public function getSpecialistsOfOrganization(int $organizationId): Collection
+    {
+        return DB::table('users')
+            ->join('users_organizations',
+                'users_organizations.user_id', '=', 'users.id')
+            ->where('users_organizations.organization_id', '=', $organizationId)
+            ->select('users.*')
+            ->get();
+    }
+
+    /**
+     * @param $userData - данные специалиста (логин. пароль)
+     * @return mixed
+     */
+    public function createSpecialist($userData)
+    {
+        $user = new $this->user;
+        $user->email = $userData['email'];
+        $user->name = $userData['email'];
+        $user->password = bcrypt($userData['password']);
+        $user->role_id = $userData['role_id'];
+        $user->save();
+
+        return $user;
+    }
+
+    /**
+     * @param User $user - пользователь с ролью специалиста
+     * @param $organizationId - ид организации, к которой привязывают специалиста
+     */
+    public function attachUserToOrganization(User $user, $organizationId)
+    {
+        $user->organizations()->attach($organizationId);
     }
 
 }

@@ -95,7 +95,7 @@ class OrganizationRepository
      */
     public function attachProblem($problemId, $organizationId)
     {
-        $organization = $this->organization->getById($organizationId);
+        $organization = $this->getById($organizationId);
         $organization->problems()->attach($problemId);
     }
 
@@ -107,7 +107,7 @@ class OrganizationRepository
      */
     public function detachProblem($problemId, $organizationId)
     {
-        $organization = $this->organization->getById($organizationId);
+        $organization = $this->getById($organizationId);
         $organization->problems()->detach($problemId);
     }
 
@@ -122,6 +122,7 @@ class OrganizationRepository
             ->join('problems_organizations',
                 'problems_organizations.organization_id', '=', 'organizations.id')
             ->where('problems_organizations.problem_id', '=', $problemId)
+            ->select('organizations.*')
             ->get();
     }
 }

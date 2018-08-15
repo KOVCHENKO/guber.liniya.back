@@ -13,6 +13,7 @@ class ProblemController extends Controller
 
     /**
      * ProblemController constructor.
+     * @param ProblemRepository $problemRepository
      */
     public function __construct(ProblemRepository $problemRepository)
     {

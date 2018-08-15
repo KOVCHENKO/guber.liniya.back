@@ -39,6 +39,15 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Role::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * Пользователь с ролью спеицалист относится к какой-либо организации
+     */
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class, 'users_organizations');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
