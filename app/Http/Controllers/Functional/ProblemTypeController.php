@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Functional;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Functional\ProblemTypeRequest;
 use App\src\Repositories\ProblemTypeRepository;
 use App\src\Services\Problems\ProblemTypeService;
-use Illuminate\Http\Request;
 
 class ProblemTypeController extends Controller
 {
@@ -37,11 +37,11 @@ class ProblemTypeController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param ProblemTypeRequest $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * Создать тип проблемы
      */
-    public function create(Request $request)
+    public function create(ProblemTypeRequest $request)
     {
         return response($this->problemTypeRepository->create($request->all()), 200);
     }

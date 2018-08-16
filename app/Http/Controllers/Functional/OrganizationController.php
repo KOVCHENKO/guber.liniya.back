@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Functional;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Functional\OrganizationRequest;
 use App\src\Repositories\OrganizationRepository;
 use App\src\Services\Organization\OrganizationProblemsControl;
 use Illuminate\Http\Request;
@@ -47,12 +48,12 @@ class OrganizationController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param OrganizationRequest $request
      * @param $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * Обновить организацию
      */
-    public function update(Request $request, $id)
+    public function update(OrganizationRequest $request, $id)
     {
         return response($this->organizationRepository->update($request->all(), $id), 200);
     }
@@ -84,7 +85,7 @@ class OrganizationController extends Controller
      */
     public function bindProblemTypeToOrganization($organizationId, $problemId, $status)
     {
-        return response($this->organizationProblemsControl
+        response($this->organizationProblemsControl
             ->bindProblemTypeToOrganization($organizationId, $problemId, $status), 200);
     }
 
