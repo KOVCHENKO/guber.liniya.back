@@ -29,5 +29,15 @@ class RoleRepository
             ->first();
     }
 
+    /**
+     * @param $roleId
+     * @return Role
+     * Получить роль по ид
+     */
+    public function getById($roleId): Role
+    {
+        return $this->role->find($roleId);
+    }
+
 
 }
