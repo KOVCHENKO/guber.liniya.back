@@ -25,7 +25,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         Route::get('bind_problem_type_to_organization/{organization_id}/{problem_id}/{status}', 'OrganizationController@bindProblemTypeToOrganization');
     });
 
-    Route::prefix('')->namespace('Functional')->middleware('role:admin')->group(function(){
+    Route::prefix('/problem_types/')->namespace('Functional')->middleware('role:admin')->group(function(){
         Route::post('create', 'ProblemTypeController@create');
         Route::get('get_by_id/{id}', 'ProblemTypeController@getByid');
         Route::get('all_with_problems/{organization_id}', 'ProblemTypeController@getAllWithQuestions');
@@ -48,3 +48,4 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
 });
 
+Route::get('/claims/export', 'Analytics\ClaimExportController@export');

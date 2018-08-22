@@ -65,6 +65,7 @@ class ClaimService
             'phone' => $data['phone'],
             'email' => $data['email'],
             'address_id' => $address['id'],
+            'status' => 'created'
         ]);
     }
 
