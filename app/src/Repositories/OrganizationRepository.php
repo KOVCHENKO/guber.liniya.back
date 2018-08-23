@@ -125,4 +125,14 @@ class OrganizationRepository
             ->select('organizations.*')
             ->get();
     }
+
+    /**
+     * @param $problemId
+     * Получить все зявки, которые пренадлежат данной организации
+     * @return \Illuminate\Support\Collection
+     */
+    public function getClaimsToOrganization($organizationId)
+    {
+        return $this->getById($organizationId)->claims()->orderBy('name')->get();
+    } 
 }

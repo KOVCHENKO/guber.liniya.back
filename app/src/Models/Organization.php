@@ -18,4 +18,9 @@ class Organization extends Model
         return $this->belongsToMany(Problem::class,
             'problems_organizations');
     }
+
+    public function claims()
+    {
+        return $this->belongsToMany(Claim::class, 'claims_organizations', 'organization_id', 'claim_id');
+    }
 }

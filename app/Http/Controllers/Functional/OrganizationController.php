@@ -89,4 +89,9 @@ class OrganizationController extends Controller
             ->bindProblemTypeToOrganization($organizationId, $problemId, $status), 200);
     }
 
+    public function getClaimsToOrganization($id)
+    {
+        return response($this->organizationRepository->getClaimsToOrganization($id), 200);
+    }
+
 }

@@ -16,13 +16,16 @@ Route::get('/get_cabinets/{user_id}', 'Common\DesktopController@getCabinets');
 
 Route::group(['middleware' => 'jwt.auth'], function () {
 
-    Route::prefix('/organizations/')->namespace('Functional')->middleware('role:admin')->group(function(){
-        Route::get('all', 'OrganizationController@getAll');
-        Route::post('create', 'OrganizationController@create');
-        Route::post('update/{id}', 'OrganizationController@update');
-        Route::get('get_by_id/{id}', 'OrganizationController@getById');
-        Route::get('delete/{id}', 'OrganizationController@delete');
-        Route::get('bind_problem_type_to_organization/{organization_id}/{problem_id}/{status}', 'OrganizationController@bindProblemTypeToOrganization');
+    Route::prefix('/organizations/')->namespace('Functional')->group(function(){
+        Route::get('all', 'OrganizationController@getAll')->middleware('role:admin');
+        Route::post('create', 'OrganizationController@create')->middleware('role:admin');
+        Route::post('update/{id}', 'OrganizationController@update')->middleware('role:admin');
+        Route::get('get_by_id/{id}', 'OrganizationController@getById')->middleware('role:admin');
+        Route::get('delete/{id}', 'OrganizationController@delete')->middleware('role:admin');
+        Route::get('bind_problem_type_to_organization/{organization_id}/{problem_id}/{status}', 'OrganizationController@bindProblemTypeToOrganization')
+            ->middleware('role:admin');
+        Route::get('all_claims_of_organization/{organization_id}', 'OrganizationController@getClaimsToOrganization')
+            ->middleware('role:specialist');
     });
 
     Route::prefix('')->namespace('Functional')->middleware('role:admin')->group(function(){

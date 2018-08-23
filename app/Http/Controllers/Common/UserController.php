@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\src\Repositories\RoleRepository;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
+use App\src\Models\User;
 
 class UserController extends Controller
 {
@@ -30,7 +31,8 @@ class UserController extends Controller
         $authedUser = Auth::user();
         $role = $this->roleRepository->getById($authedUser->role_id);
         $authedUser->role = $role;
-
+        $authedUser->organization = $authedUser->organizations()->first();
+        
         return $authedUser;
     }
 }
