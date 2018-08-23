@@ -25,7 +25,7 @@ class ProblemTypeRepository
     public function getAll()
     {
         return $this->problemType
-            ->with('problems')
+            ->with('children')
             ->get();
     }
 
