@@ -59,5 +59,20 @@ class ProblemTypeRepository
             ->get();
     }
 
+    public function update($problemTypeId, $problemType)
+    {
+        $problemTypeForEdit = $this->problemType->find($problemTypeId);
+        $problemTypeForEdit->name = $problemType['name'];
+        $problemTypeForEdit->description = $problemType['description'];
+        $problemTypeForEdit->save();
+
+        return $problemTypeForEdit;
+    }
+
+    public function delete($id)
+    {
+        return $this->problemType->destroy($id);
+    }
+
 
 }
