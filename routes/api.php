@@ -32,6 +32,8 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         Route::post('create', 'ProblemTypeController@create');
         Route::get('get_by_id/{id}', 'ProblemTypeController@getByid');
         Route::get('all_with_problems/{organization_id}', 'ProblemTypeController@getAllWithQuestions');
+        Route::post('edit_problem_type/{problem_type_id}', 'ProblemTypeController@editProblemType');
+        Route::get('delete/{problem_type_id}', 'ProblemTypeController@delete');
     });
     Route::get('/problem_types/all', 'Functional\ProblemTypeController@getAll')
         ->middleware('role:admin,dispatcher');
@@ -48,6 +50,9 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     });
 
     Route::post('/problems/create', 'Functional\ProblemController@create')->middleware('role:admin');
+    Route::get('/problems/delete/{id}', 'Functional\ProblemController@delete')->middleware('role:admin');
+    Route::get('/problems/get_by_id/{id}', 'Functional\ProblemController@getById')->middleware('role:admin');
+    Route::post('/problems/update/{id}', 'Functional\ProblemController@update')->middleware('role:admin');
 
 });
 

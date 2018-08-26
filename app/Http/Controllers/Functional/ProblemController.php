@@ -30,4 +30,29 @@ class ProblemController extends Controller
         return response($this->problemRepository->create($request->all()), 200);
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * Удалить проблему по id
+     */
+    public function delete($id)
+    {
+        return response($this->problemRepository->delete($id), 200);
+    }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * Получить проблему по ид
+     */
+    public function getById($id)
+    {
+        return response($this->problemRepository->getById($id), 200);
+    }
+
+    public function update(Request $request, $problemId)
+    {
+        return response($this->problemRepository->update($request->all(), $problemId), 200);
+    }
+
 }

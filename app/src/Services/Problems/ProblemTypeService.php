@@ -40,4 +40,19 @@ class ProblemTypeService
                 ->pluck('problem_id')
         ];
     }
+
+    /**
+     * @param $problemType
+     * @param $problemTypeId
+     * @return
+     */
+    public function editProblemType($problemType, $problemTypeId)
+    {
+        return $this->problemTypeRepository->update($problemTypeId, $problemType);
+    }
+
+    public function delete($id)
+    {
+        return $this->problemTypeRepository->delete($id);
+    }
 }
