@@ -89,9 +89,19 @@ class OrganizationController extends Controller
             ->bindProblemTypeToOrganization($organizationId, $problemId, $status), 200);
     }
 
+    /**
+     * @param $id - ид организации
+     * Получить все зявки, которые пренадлежат данной организации
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function getClaimsToOrganization($id)
     {
         return response($this->organizationRepository->getClaimsToOrganization($id), 200);
+    }
+
+    public function getChildOrganization($organization_id)
+    {
+        return response($this->organizationRepository->getChildOrganization($organization_id), 200);
     }
 
 }

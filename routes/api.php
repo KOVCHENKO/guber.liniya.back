@@ -26,6 +26,8 @@ Route::group(['middleware' => 'jwt.auth'], function () {
             ->middleware('role:admin');
         Route::get('all_claims_of_organization/{organization_id}', 'OrganizationController@getClaimsToOrganization')
             ->middleware('role:specialist');
+        Route::get('all_children_organization/{organization_id}', 'OrganizationController@getChildOrganization')
+            ->middleware('role:specialist');
     });
 
     Route::prefix('/problem_types/')->namespace('Functional')->middleware('role:admin')->group(function(){

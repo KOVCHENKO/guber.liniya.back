@@ -134,5 +134,10 @@ class OrganizationRepository
     public function getClaimsToOrganization($organizationId)
     {
         return $this->getById($organizationId)->claims()->orderBy('name')->get();
-    } 
+    }
+    
+    public function getChildOrganization($organizationId)
+    {
+        return $this->getById($organizationId)->children()->get();
+    }
 }
