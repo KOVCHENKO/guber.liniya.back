@@ -10,6 +10,6 @@ class CallController
 {
     public function getCall(Request $request)
     {
-        Log::info(serialize($request->all()));
+        Log::channel('daily')->info(serialize($request->all()));
     }
 }
