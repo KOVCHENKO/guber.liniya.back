@@ -32,6 +32,34 @@ class ClaimService
     }
 
     /**
+     * @param $data - array
+     * Создает заявку на основе звонка
+     */
+    public function createBasedOnCall($data)
+    {
+        $data['address']['district'] = 'не заполнено';
+        $data['address']['location'] = 'не заполнено';
+
+        $address = $this->addressRepository->create([
+            'district' => $data['address']['district'],
+            'location' => $data['address']['location']
+        ]);
+
+        $this->claimRepository->create([
+            'firstname' => 'не заполнено',
+            'lastname' => 'не заполнено',
+            'middlename' => 'не заполнено',
+            'name' => $data['status'],
+            'description' => $data['link'],
+            'phone' => $data['phone'],
+            'email' => 'не заполнено',
+            'address_id' => $address['id'],
+            'status' => 'created'
+        ]);
+
+    }
+
+    /**
      * @param $data
      * 1. Создать заявку
      * 2. Распределить по организациям
