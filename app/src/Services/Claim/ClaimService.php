@@ -49,8 +49,10 @@ class ClaimService
             'firstname' => 'не заполнено',
             'lastname' => 'не заполнено',
             'middlename' => 'не заполнено',
-            'name' => $data['status'],
-            'description' => $data['link'],
+            'name' => $data['callid'],
+            'description' => 'не заполнено',
+            'link' => $data['link'],
+            'ats_status' => $data['status'],
             'phone' => $data['phone'],
             'email' => 'не заполнено',
             'address_id' => $address['id'],
@@ -61,11 +63,11 @@ class ClaimService
 
     /**
      * @param $data
-     * 1. Создать заявку
+     * 1. Создать заявку (на основе уже существующей в БД из АТС Мегафон
      * 2. Распределить по организациям
      * @return mixed
      */
-    public function create($data)
+    public function createViaUpdating($data)
     {
         $newClaim = $this->saveClaim($data);
         $this->distributeByOrganizations($newClaim, $data);
@@ -75,16 +77,18 @@ class ClaimService
 
     /**
      * @param $data
-     * @return Claim - новая заявка
+     * @return Claim - сохранение заявки на основе АТС Мегафон
      */
     private function saveClaim($data): Claim
     {
-        $address = $this->addressRepository->create([
+        $this->addressRepository->update([
+            'address_id' => $data['address']['id'],
             'district' => $data['address']['district'],
             'location' => $data['address']['location']
         ]);
 
-        return $this->claimRepository->create([
+        return $this->claimRepository->update([
+            'id' => $data['id'],
             'firstname' => $data['firstName'],
             'lastname' => $data['lastName'],
             'middlename' => $data['middleName'],
@@ -92,7 +96,6 @@ class ClaimService
             'description' => $data['description'],
             'phone' => $data['phone'],
             'email' => $data['email'],
-            'address_id' => $address['id'],
             'status' => 'created'
         ]);
     }

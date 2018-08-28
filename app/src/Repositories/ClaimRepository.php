@@ -24,7 +24,10 @@ class ClaimRepository
      */
     public function getAll()
     {
-        return $this->claim->all();
+        return $this->claim
+            ->with('problem')
+            ->with('address')
+            ->get();
     }
 
     /**
@@ -35,6 +38,24 @@ class ClaimRepository
     public function create($claim)
     {
         return $this->claim->create($claim);
+    }
+
+    public function update($claim): Claim
+    {
+        $claimToUpdate = $this->claim->find($claim['id']);
+
+        $claimToUpdate->id = $claim['id'];
+        $claimToUpdate->firstname = $claim['firstname'];
+        $claimToUpdate->lastname = $claim['lastname'];
+        $claimToUpdate->middlename = $claim['middlename'];
+        $claimToUpdate->name = $claim['name'];
+        $claimToUpdate->description = $claim['description'];
+        $claimToUpdate->phone = $claim['phone'];
+        $claimToUpdate->email = $claim['email'];
+        $claimToUpdate->status = 'created';
+        $claimToUpdate->save();
+
+        return $claimToUpdate;
     }
 
     /**

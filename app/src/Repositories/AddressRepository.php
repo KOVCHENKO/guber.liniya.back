@@ -28,5 +28,13 @@ class AddressRepository
         return $this->address->create($address);
     }
 
+    public function update($address)
+    {
+        $addressToUpdate = $this->address->find($address['address_id']);
+        $addressToUpdate->district = $address['district'];
+        $addressToUpdate->location = $address['location'];
+
+    }
+
 
 }
