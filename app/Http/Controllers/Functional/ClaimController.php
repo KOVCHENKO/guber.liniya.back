@@ -28,9 +28,10 @@ class ClaimController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * Получить все заявки
      */
-    public function getAll()
+    public function getAll($page)
     {
-        return response($this->claimRepository->getAll(), 200);
+        return response($this->claimService->getAll($page), 200);
+//        return response($this->claimRepository->getAll($page), 200);
     }
 
     /**

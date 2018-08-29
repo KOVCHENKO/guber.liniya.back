@@ -15,6 +15,8 @@ class ClaimService
     protected $addressRepository;
     protected $organizationRepository;
 
+    protected $claimsPerPage = 10;
+
     /**
      * ClaimService constructor.
      * @param ClaimRepository $claimRepository
@@ -127,6 +129,32 @@ class ClaimService
     {
         return $this->organizationRepository->getOrganizationsByProblem($problemId);
     }
+
+    /**
+     * @param $page - получить согласно странице
+     * Пока что по 10 записей на страницу (default)
+     * @return Claim[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getAll($page)
+    {
+        return [
+            'claims' => $this->claimRepository->getAll(
+                $this->claimsPerPage,
+                $this->getSkippedItems($page)
+            ),
+            'pages' => ceil($this->claimRepository->getPagesCount() / $this->claimsPerPage)
+        ];
+    }
+
+    private function getSkippedItems($page)
+    {
+        if (!isset($page)) {
+           $page = 1;
+        }
+
+        return ($page != 1) ? ($page - 1) * $this->claimsPerPage : 0;
+    }
+
 
 
 }

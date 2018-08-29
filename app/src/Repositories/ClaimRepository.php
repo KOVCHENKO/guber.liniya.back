@@ -22,11 +22,13 @@ class ClaimRepository
      * @return Claim[]|\Illuminate\Database\Eloquent\Collection
      * Получить все заявки
      */
-    public function getAll()
+    public function getAll($take, $skip)
     {
         return $this->claim
             ->with('problem')
             ->with('address')
+            ->take($take)
+            ->skip($skip)
             ->get();
     }
 
@@ -66,5 +68,10 @@ class ClaimRepository
     public function assignClaimToResponsibleOrganization(Claim $claim, $organizationId)
     {
         $claim->organizations()->attach($organizationId);
+    }
+
+    public function getPagesCount()
+    {
+        return $this->claim->count();
     }
 }
