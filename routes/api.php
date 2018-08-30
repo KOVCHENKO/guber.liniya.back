@@ -33,12 +33,12 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         Route::get('delete/{problem_type_id}', 'ProblemTypeController@delete');
     });
     Route::get('/problem_types/all', 'Functional\ProblemTypeController@getAll')
-        ->middleware('role:admin,dispatcher');
+        ->middleware('role:admin,dispatcher,editor,supervisor');
 
 
     Route::prefix('/claims/')->namespace('Functional')->group(function(){
-        Route::get('all/{page}', 'ClaimController@getAll')->middleware('role:dispatcher');
-        Route::get('search/{page}/{search}', 'ClaimController@search')->middleware('role:dispatcher');
+        Route::get('all/{page}/{dispatch_status}', 'ClaimController@getAll')->middleware('role:dispatcher,editor,supervisor');
+        Route::get('search/{page}/{search}/{dispatch_status}', 'ClaimController@search')->middleware('role:dispatcher');
         Route::post('create', 'ClaimController@create')->middleware('role:dispatcher');
     });
 
