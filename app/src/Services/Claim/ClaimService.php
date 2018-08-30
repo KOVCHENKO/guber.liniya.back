@@ -155,6 +155,17 @@ class ClaimService
         return ($page != 1) ? ($page - 1) * $this->claimsPerPage : 0;
     }
 
+    public function search($page, $search)
+    {
+        return [
+            'claims' => $this->claimRepository->search(
+                $this->claimsPerPage,
+                $this->getSkippedItems($page),
+                $search
+            ),
+            'pages' => ceil($this->claimRepository->getPagesCount() / $this->claimsPerPage)
+        ];
+    }
 
 
 }

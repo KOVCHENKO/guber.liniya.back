@@ -31,7 +31,6 @@ class ClaimController extends Controller
     public function getAll($page)
     {
         return response($this->claimService->getAll($page), 200);
-//        return response($this->claimRepository->getAll($page), 200);
     }
 
     /**
@@ -41,6 +40,16 @@ class ClaimController extends Controller
      */
     public function create(Request $request) {
         return response($this->claimService->createViaUpdating($request->all()), 200);
+    }
+
+    /**
+     * @param $page - страница
+     * @param $search - строка поиска
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function search($page, $search)
+    {
+        return response($this->claimService->search($page, $search), 200);
     }
 
 

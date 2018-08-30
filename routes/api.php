@@ -38,6 +38,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
     Route::prefix('/claims/')->namespace('Functional')->group(function(){
         Route::get('all/{page}', 'ClaimController@getAll')->middleware('role:dispatcher');
+        Route::get('search/{page}/{search}', 'ClaimController@search')->middleware('role:dispatcher');
         Route::post('create', 'ClaimController@create')->middleware('role:dispatcher');
     });
 
@@ -54,6 +55,3 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 });
 
 Route::get('/claims/export', 'Analytics\ClaimExportController@export');
-Route::post('/calls/get_call', 'Functional\CallController@getCall');
-
-Route::post('/claims/all', 'Functional\ClaimController@getAll');

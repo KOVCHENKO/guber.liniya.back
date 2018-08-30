@@ -19,6 +19,8 @@ class ClaimRepository
     }
 
     /**
+     * @param $take - кол-во получаемых элементов
+     * @param $skip - оффсет, пропустить элементы
      * @return Claim[]|\Illuminate\Database\Eloquent\Collection
      * Получить все заявки
      */
@@ -73,5 +75,16 @@ class ClaimRepository
     public function getPagesCount()
     {
         return $this->claim->count();
+    }
+
+    public function search($take, $skip, $search)
+    {
+        return $this->claim
+            ->with('problem')
+            ->with('address')
+            ->take($take)
+            ->skip($skip)
+            ->where('description', 'like', '%'.$search.'%')
+            ->get();
     }
 }
