@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class EditClaimsTableAddStatusColumn extends Migration
+class EditClaimTableAddProblemId extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,8 @@ class EditClaimsTableAddStatusColumn extends Migration
     public function up()
     {
         Schema::table('claims', function (Blueprint $table) {
-            $table->enum('status', ['created', 'assigned', 'executed'])->default('created');
+            $table->unsignedInteger('problem_id')->nullable();
+            $table->foreign('problem_id' )->references('id')->on('problems')->onDelete('restrict');
         });
     }
 
@@ -25,8 +26,6 @@ class EditClaimsTableAddStatusColumn extends Migration
      */
     public function down()
     {
-        Schema::table('claims', function (Blueprint $table) {
-            $table->dropColumn('status');
-        });
+        //
     }
 }

@@ -42,7 +42,8 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
 
     Route::prefix('/claims/')->namespace('Functional')->group(function(){
-        Route::get('all', 'ClaimController@getAll')->middleware('role:dispatcher');
+        Route::get('all/{page}', 'ClaimController@getAll')->middleware('role:dispatcher');
+        Route::get('search/{page}/{search}', 'ClaimController@search')->middleware('role:dispatcher');
         Route::post('create', 'ClaimController@create')->middleware('role:dispatcher');
     });
 

@@ -12,7 +12,7 @@ class Dispatcher implements RoleTypeInterface
     public function getCabinets()
     {
         return [
-            new Cabinet(1, 'Заявки', 'applications', 'dispatcher_applications')
+            new Cabinet(1, 'Заявки', 'applications', 'dispatcher_applications'),
         ];
     }
 }

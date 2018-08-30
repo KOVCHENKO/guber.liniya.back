@@ -18,4 +18,14 @@ class Claim extends Model
         return $this->belongsToMany(Organization::class,
             'claims_organizations');
     }
+
+    public function problem()
+    {
+        return $this->belongsTo(Problem::class, 'problem_id');
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'address_id');
+    }
 }

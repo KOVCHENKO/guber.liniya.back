@@ -19,12 +19,19 @@ class ClaimRepository
     }
 
     /**
+     * @param $take - кол-во получаемых элементов
+     * @param $skip - оффсет, пропустить элементы
      * @return Claim[]|\Illuminate\Database\Eloquent\Collection
      * Получить все заявки
      */
-    public function getAll()
+    public function getAll($take, $skip)
     {
-        return $this->claim->all();
+        return $this->claim
+            ->with('problem')
+            ->with('address')
+            ->take($take)
+            ->skip($skip)
+            ->get();
     }
 
     /**
@@ -37,6 +44,24 @@ class ClaimRepository
         return $this->claim->create($claim);
     }
 
+    public function update($claim): Claim
+    {
+        $claimToUpdate = $this->claim->find($claim['id']);
+
+        $claimToUpdate->id = $claim['id'];
+        $claimToUpdate->firstname = $claim['firstname'];
+        $claimToUpdate->lastname = $claim['lastname'];
+        $claimToUpdate->middlename = $claim['middlename'];
+        $claimToUpdate->name = $claim['name'];
+        $claimToUpdate->description = $claim['description'];
+        $claimToUpdate->phone = $claim['phone'];
+        $claimToUpdate->email = $claim['email'];
+        $claimToUpdate->status = 'created';
+        $claimToUpdate->save();
+
+        return $claimToUpdate;
+    }
+
     /**
      * @param Claim $claim
      * @param $organizationId - id организации
@@ -45,5 +70,21 @@ class ClaimRepository
     public function assignClaimToResponsibleOrganization(Claim $claim, $organizationId)
     {
         $claim->organizations()->attach($organizationId);
+    }
+
+    public function getPagesCount()
+    {
+        return $this->claim->count();
+    }
+
+    public function search($take, $skip, $search)
+    {
+        return $this->claim
+            ->with('problem')
+            ->with('address')
+            ->take($take)
+            ->skip($skip)
+            ->where('description', 'like', '%'.$search.'%')
+            ->get();
     }
 }
