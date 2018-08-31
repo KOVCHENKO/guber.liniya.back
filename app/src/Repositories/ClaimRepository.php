@@ -21,16 +21,18 @@ class ClaimRepository
     /**
      * @param $take - кол-во получаемых элементов
      * @param $skip - оффсет, пропустить элементы
+     * @param $dispatchStatus - prepared, edited, dispatched, null
      * @return Claim[]|\Illuminate\Database\Eloquent\Collection
      * Получить все заявки
      */
-    public function getAll($take, $skip)
+    public function getAll($take, $skip, $dispatchStatus)
     {
         return $this->claim
             ->with('problem')
             ->with('address')
             ->take($take)
             ->skip($skip)
+            ->whereIn('dispatch_status', $dispatchStatus)
             ->get();
     }
 
@@ -72,12 +74,14 @@ class ClaimRepository
         $claim->organizations()->attach($organizationId);
     }
 
-    public function getPagesCount()
+    public function getPagesCount($resolvedDispatchStatus)
     {
-        return $this->claim->count();
+        return $this->claim
+            ->whereIn('dispatch_status', $resolvedDispatchStatus)
+            ->count();
     }
 
-    public function search($take, $skip, $search)
+    public function search($take, $skip, $search, $resolvedDispatchStatus)
     {
         return $this->claim
             ->with('problem')
@@ -85,6 +89,8 @@ class ClaimRepository
             ->take($take)
             ->skip($skip)
             ->where('description', 'like', '%'.$search.'%')
+            ->whereIn('dispatch_status', $resolvedDispatchStatus)
             ->get();
     }
+
 }

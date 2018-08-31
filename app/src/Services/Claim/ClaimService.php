@@ -133,18 +133,39 @@ class ClaimService
     /**
      * @param $page - получить согласно странице
      * Пока что по 10 записей на страницу (default)
+     * @param $dispatchStatus - все, отредактированные, для отправки
      * @return Claim[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getAll($page)
+    public function getAll($page, $dispatchStatus)
     {
+        $resolvedDispatchStatus = $this->resolveDispatchStatus($dispatchStatus);
+        $claims = $this->claimRepository->getAll(
+            $this->claimsPerPage,
+            $this->getSkippedItems($page),
+            $resolvedDispatchStatus
+        );
+
         return [
-            'claims' => $this->claimRepository->getAll(
-                $this->claimsPerPage,
-                $this->getSkippedItems($page)
-            ),
-            'pages' => ceil($this->claimRepository->getPagesCount() / $this->claimsPerPage)
+            'claims' => $claims,
+            'pages' => ceil($this->claimRepository->getPagesCount($resolvedDispatchStatus) / $this->claimsPerPage)
         ];
     }
+
+    private function resolveDispatchStatus($dispatchStatus)
+    {
+        switch ($dispatchStatus) {
+            case 'all':             // для диспетчера
+                return ['raw', 'edited', 'dispatched', 'prepared'];
+                break;
+            case 'prepared':        // для редактора
+                return ['prepared'];
+                break;
+            case 'edited':          // для супервизора-отправителя
+                return ['edited', 'dispatched'];
+                break;
+        }
+    }
+
 
     private function getSkippedItems($page)
     {
@@ -155,15 +176,24 @@ class ClaimService
         return ($page != 1) ? ($page - 1) * $this->claimsPerPage : 0;
     }
 
-    public function search($page, $search)
+    /**
+     * @param $page - страница
+     * @param $search - поиск (строка)
+     * @param $dispatchStatus - все, отредактированные, для отправки
+     * @return array
+     */
+    public function search($page, $search, $dispatchStatus)
     {
+        $resolvedDispatchStatus = $this->resolveDispatchStatus($dispatchStatus);
+
         return [
             'claims' => $this->claimRepository->search(
                 $this->claimsPerPage,
                 $this->getSkippedItems($page),
-                $search
+                $search,
+                $resolvedDispatchStatus
             ),
-            'pages' => ceil($this->claimRepository->getPagesCount() / $this->claimsPerPage)
+            'pages' => ceil($this->claimRepository->getPagesCount($resolvedDispatchStatus) / $this->claimsPerPage)
         ];
     }
 

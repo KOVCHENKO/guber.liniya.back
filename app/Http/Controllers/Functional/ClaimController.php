@@ -25,12 +25,14 @@ class ClaimController extends Controller
     }
 
     /**
+     * @param $page - страница
+     * @param $dispatchStatus - все, отредактированные, для отправки
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * Получить все заявки
      */
-    public function getAll($page)
+    public function getAll($page, $dispatchStatus)
     {
-        return response($this->claimService->getAll($page), 200);
+        return response($this->claimService->getAll($page, $dispatchStatus), 200);
     }
 
     /**
@@ -45,11 +47,12 @@ class ClaimController extends Controller
     /**
      * @param $page - страница
      * @param $search - строка поиска
+     * @param $dispatchStatus - все, отредактированные, для отправки
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
-    public function search($page, $search)
+    public function search($page, $search, $dispatchStatus)
     {
-        return response($this->claimService->search($page, $search), 200);
+        return response($this->claimService->search($page, $search, $dispatchStatus), 200);
     }
 
 
