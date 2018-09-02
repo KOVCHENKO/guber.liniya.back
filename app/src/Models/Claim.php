@@ -10,7 +10,9 @@ class Claim extends Model
     protected $table = 'claims';
 
     protected $fillable = [
-        'name', 'description', 'firstname', 'middlename', 'lastname', 'phone', 'email', 'address_id'
+        'name', 'description',
+        'firstname', 'middlename', 'lastname', 'phone', 'email', 'address_id',
+        'link', 'ats_status', 'problem_id', 'status', 'dispatch_status'
     ];
 
     public function organizations()
