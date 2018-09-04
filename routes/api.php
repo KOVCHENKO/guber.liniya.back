@@ -60,3 +60,4 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 });
 
 Route::get('/claims/export', 'Analytics\ClaimExportController@export');
+Route::post('/calls/get_call', 'Functional\CallController@getCall');
