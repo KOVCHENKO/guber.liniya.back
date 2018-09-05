@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Functional;
 
 
-use App\src\Services\CallService;
+use App\src\Services\Call\CallService;
 use Illuminate\Http\Request;
 
 class CallController
@@ -19,9 +19,20 @@ class CallController
         $this->callService = $callService;
     }
 
-
-    public function getCall(Request $request)
+    /**
+     * @param Request $request
+     * Получить звонок с облачной АТС для внесения в локальную БД
+     */
+    public function receive(Request $request)
     {
-        $this->callService->getCall($request->all());
+        $this->callService->receive($request->all());
+    }
+
+    /**
+     * Получтиь все звонки из БД
+     */
+    public function getAll($page)
+    {
+        return $this->callService->all($page);
     }
 }
