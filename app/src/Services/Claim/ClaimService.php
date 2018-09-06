@@ -7,6 +7,7 @@ use App\src\Models\Claim;
 use App\src\Repositories\AddressRepository;
 use App\src\Repositories\ClaimRepository;
 use App\src\Repositories\OrganizationRepository;
+use App\src\Services\Call\CallService;
 use Illuminate\Support\Collection;
 
 class ClaimService
@@ -14,6 +15,7 @@ class ClaimService
     protected $claimRepository;
     protected $addressRepository;
     protected $organizationRepository;
+    protected $callRepository;
 
     protected $claimsPerPage = 10;
 
@@ -26,41 +28,48 @@ class ClaimService
     public function __construct(
         ClaimRepository $claimRepository,
         AddressRepository $addressRepository,
-        OrganizationRepository $organizationRepository)
+        OrganizationRepository $organizationRepository,
+        CallService $callService)
     {
         $this->claimRepository = $claimRepository;
         $this->addressRepository = $addressRepository;
         $this->organizationRepository = $organizationRepository;
+        $this->callService = $callService;
     }
 
     /**
      * @param $data - array
      * Создает заявку на основе звонка
+     * @return mixed
      */
     public function createBasedOnCall($data)
     {
-        $data['address']['district'] = 'не заполнено';
-        $data['address']['location'] = 'не заполнено';
+        $this->callService->updateCall($data['call']);
 
         $address = $this->addressRepository->create([
             'district' => $data['address']['district'],
             'location' => $data['address']['location']
         ]);
 
-        $this->claimRepository->create([
-            'firstname' => 'не заполнено',
-            'lastname' => 'не заполнено',
-            'middlename' => 'не заполнено',
-            'name' => $data['callid'],
-            'description' => 'не заполнено',
+        $newClaim = $this->claimRepository->create([
+            'firstname' =>  $data['firstName'],
+            'lastname' =>  $data['lastName'],
+            'middlename' =>  $data['middleName'],
+            'name' => $data['call']['callId'],
+            'description' =>  $data['description'],
             'link' => $data['link'],
-            'ats_status' => $data['status'],
+            'ats_status' => $data['call']['atsStatus'],
             'phone' => $data['phone'],
-            'email' => 'не заполнено',
+            'email' =>  $data['email'],
             'address_id' => $address['id'],
+            'call_id' => $data['call']['id'],
+            'problem_id' => $data['problem']['id'],
             'status' => 'created'
         ]);
 
+        $this->distributeByOrganizations($newClaim, $data);
+
+        return $newClaim;
     }
 
     /**
@@ -69,7 +78,7 @@ class ClaimService
      * 2. Распределить по организациям
      * @return mixed
      */
-    public function createViaUpdating($data)
+    public function updateAndDistributeByOrganizations($data)
     {
         $newClaim = $this->saveClaim($data);
         $this->distributeByOrganizations($newClaim, $data);
@@ -114,7 +123,7 @@ class ClaimService
         $responsibleOrganizations =  $this->getOrganizationsRelatedToProblem($data['problem']['id']);
 
         $responsibleOrganizations->map(function ($organization) use ($newClaim) {
-            $this->claimRepository->assignClaimToResponsibleOrganization($newClaim, $organization->id);
+            $this->claimRepository->assignClaimToResponsibleOrganization($newClaim, $organization->id, 'hide');
         });
 
         return true;

@@ -30,6 +30,8 @@ class CallController
 
     /**
      * Получтиь все звонки из БД
+     * @param $page
+     * @return \App\src\Models\Call[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getAll($page)
     {

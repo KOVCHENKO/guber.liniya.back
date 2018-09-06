@@ -56,9 +56,15 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('/problems/delete/{id}', 'Functional\ProblemController@delete')->middleware('role:admin');
     Route::get('/problems/get_by_id/{id}', 'Functional\ProblemController@getById')->middleware('role:admin');
     Route::post('/problems/update/{id}', 'Functional\ProblemController@update')->middleware('role:admin');
+    Route::get('/problems/get_organizations_of_problem/{problem_id}', 'Functional\ProblemController@getOrganizationsOfProblem')->middleware('role:dispatcher');
+
+    Route::prefix('/calls')->namespace('Functional')->middleware('role:dispatcher')->group(function() {
+        Route::get('/all/{page}', 'CallController@getAll');
+        Route::get('get_previous_by_phone/{page}', 'CallController@getPreviousByPhone');
+    });
 
 });
 
-Route::get('/claims/export', 'Analytics\ClaimExportController@export');
 Route::post('/calls/get_call', 'Functional\CallController@receive');
-Route::get('/calls/all/{page}', 'Functional\CallController@getAll');
+
+Route::get('/claims/export', 'Analytics\ClaimExportController@export');

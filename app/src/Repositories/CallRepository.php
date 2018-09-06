@@ -32,6 +32,7 @@ class CallRepository
         $newCall->phone = $call['phone'];
         $newCall->ext = $call['ext'];
         $newCall->type = $call['type'];
+        $newCall->processing_status = $call['raw'];
 
         $newCall->save();
 
@@ -55,5 +56,16 @@ class CallRepository
     public function getPagesCount()
     {
         return $this->call->count();
+    }
+
+    /**
+     * @param $call
+     * Обновить информацию о звонке
+     */
+    public function update($call)
+    {
+        $callToUpdate = $this->call->find($call['id']);
+        $callToUpdate->processing_status = $call['processingStatus'];
+        $callToUpdate->save();
     }
 }

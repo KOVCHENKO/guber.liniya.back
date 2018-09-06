@@ -80,5 +80,14 @@ class CallService
 
     }
 
+    /**
+     * @param $call
+     * Обновить информацию о звонке - processing_status
+     */
+    public function updateCall($call)
+    {
+        $this->callRepository->update($call);
+    }
+
 
 }

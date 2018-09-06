@@ -4,20 +4,24 @@ namespace App\Http\Controllers\Functional;
 
 
 use App\Http\Controllers\Controller;
+use App\src\Repositories\OrganizationRepository;
 use App\src\Repositories\ProblemRepository;
 use Illuminate\Http\Request;
 
 class ProblemController extends Controller
 {
     protected $problemRepository;
+    protected $organizationRepository;
 
     /**
      * ProblemController constructor.
      * @param ProblemRepository $problemRepository
+     * @param OrganizationRepository $organizationRepository
      */
-    public function __construct(ProblemRepository $problemRepository)
+    public function __construct(ProblemRepository $problemRepository, OrganizationRepository $organizationRepository)
     {
         $this->problemRepository = $problemRepository;
+        $this->organizationRepository = $organizationRepository;
     }
 
     /**
@@ -50,9 +54,25 @@ class ProblemController extends Controller
         return response($this->problemRepository->getById($id), 200);
     }
 
+    /**
+     * @param Request $request
+     * @param $problemId
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * Обновить проблему
+     */
     public function update(Request $request, $problemId)
     {
         return response($this->problemRepository->update($request->all(), $problemId), 200);
+    }
+
+    /**
+     * @param int $problemId
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * Получить все организации, привязанные к определенной проблеме
+     */
+    public function getOrganizationsOfProblem(int $problemId)
+    {
+        return response($this->organizationRepository->getOrganizationsByProblem($problemId), 200);
     }
 
 }

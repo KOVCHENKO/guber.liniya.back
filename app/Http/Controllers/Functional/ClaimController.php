@@ -41,7 +41,7 @@ class ClaimController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function create(Request $request) {
-        return response($this->claimService->createViaUpdating($request->all()), 200);
+        return response($this->claimService->createBasedOnCall($request->all()), 200);
     }
 
     /**

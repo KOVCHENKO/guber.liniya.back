@@ -4,6 +4,7 @@ namespace App\src\Repositories;
 
 
 use App\src\Models\Claim;
+use Carbon\Carbon;
 
 class ClaimRepository
 {
@@ -69,9 +70,12 @@ class ClaimRepository
      * @param $organizationId - id организации
      * @return void
      */
-    public function assignClaimToResponsibleOrganization(Claim $claim, $organizationId)
+    public function assignClaimToResponsibleOrganization(Claim $claim, $organizationId, $visibility)
     {
-        $claim->organizations()->attach($organizationId);
+        $claim->organizations()->attach($organizationId, [
+            'visibility' => $visibility,
+            'created_at' => Carbon::now()
+        ]);
     }
 
     public function getPagesCount($resolvedDispatchStatus)
