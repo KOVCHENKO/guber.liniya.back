@@ -61,11 +61,14 @@ class CallRepository
     /**
      * @param $call
      * Обновить информацию о звонке
+     * @return возвращает обновленный звонок
      */
     public function update($call)
     {
         $callToUpdate = $this->call->find($call['id']);
         $callToUpdate->processing_status = $call['processingStatus'];
         $callToUpdate->save();
+
+        return $callToUpdate;
     }
 }

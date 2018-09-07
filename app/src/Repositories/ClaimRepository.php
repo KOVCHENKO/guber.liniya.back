@@ -4,7 +4,9 @@ namespace App\src\Repositories;
 
 
 use App\src\Models\Claim;
+use App\src\Models\Organization;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ClaimRepository
 {
@@ -95,6 +97,32 @@ class ClaimRepository
             ->where('description', 'like', '%'.$search.'%')
             ->whereIn('dispatch_status', $resolvedDispatchStatus)
             ->get();
+    }
+
+    /**
+     * @param $phone
+     * Получить все предыдущие, созданные заявки с определенным номером телефона
+     * @return - возвращает список заявок с одинаковым номером телефона
+     */
+    public function getByPhone($phone)
+    {
+        return $this->claim
+            ->where('phone', $phone)
+            ->with('problem')
+            ->with('address')
+            ->get();
+    }
+
+    /**
+     * @param $pid
+     * Получтить организацию, которая решает данную заявку
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|null|object
+     */
+    public function getOrganizationWhichResolvesClaim(int $claimId)
+    {
+        return DB::table('claims_organizations')
+            ->where('claim_id', $claimId)
+            ->first();
     }
 
 }

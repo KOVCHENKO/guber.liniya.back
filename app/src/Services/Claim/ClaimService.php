@@ -8,6 +8,7 @@ use App\src\Repositories\AddressRepository;
 use App\src\Repositories\ClaimRepository;
 use App\src\Repositories\OrganizationRepository;
 use App\src\Services\Call\CallService;
+use App\src\Services\Claim\PIDStatus\PIDResolver;
 use Illuminate\Support\Collection;
 
 class ClaimService
@@ -16,6 +17,7 @@ class ClaimService
     protected $addressRepository;
     protected $organizationRepository;
     protected $callRepository;
+    protected $pidResolver;
 
     protected $claimsPerPage = 10;
 
@@ -23,18 +25,19 @@ class ClaimService
      * ClaimService constructor.
      * @param ClaimRepository $claimRepository
      * @param AddressRepository $addressRepository
-     * @param OrganizationRepository $organizationRepository
+     * @param CallService $callService
+     * @param PIDResolver $PIDResolver
      */
     public function __construct(
         ClaimRepository $claimRepository,
         AddressRepository $addressRepository,
-        OrganizationRepository $organizationRepository,
-        CallService $callService)
+        CallService $callService,
+        PIDResolver $PIDResolver)
     {
         $this->claimRepository = $claimRepository;
         $this->addressRepository = $addressRepository;
-        $this->organizationRepository = $organizationRepository;
         $this->callService = $callService;
+        $this->pidResolver = $PIDResolver;
     }
 
     /**
@@ -44,32 +47,13 @@ class ClaimService
      */
     public function createBasedOnCall($data)
     {
-        $this->callService->updateCall($data['call']);
+        $updatedCall = $this->callService->updateCall($data['call']);
 
-        $address = $this->addressRepository->create([
-            'district' => $data['address']['district'],
-            'location' => $data['address']['location']
-        ]);
+        $pidStatusEntity = $this->pidResolver->resolvePidStatus($data['pid']);
+        $pidStatusEntity->createBasedOnCall($data);
 
-        $newClaim = $this->claimRepository->create([
-            'firstname' =>  $data['firstName'],
-            'lastname' =>  $data['lastName'],
-            'middlename' =>  $data['middleName'],
-            'name' => $data['call']['callId'],
-            'description' =>  $data['description'],
-            'link' => $data['link'],
-            'ats_status' => $data['call']['atsStatus'],
-            'phone' => $data['phone'],
-            'email' =>  $data['email'],
-            'address_id' => $address['id'],
-            'call_id' => $data['call']['id'],
-            'problem_id' => $data['problem']['id'],
-            'status' => 'created'
-        ]);
+        return $updatedCall;
 
-        $this->distributeByOrganizations($newClaim, $data);
-
-        return $newClaim;
     }
 
     /**
@@ -78,19 +62,7 @@ class ClaimService
      * 2. Распределить по организациям
      * @return mixed
      */
-    public function updateAndDistributeByOrganizations($data)
-    {
-        $newClaim = $this->saveClaim($data);
-        $this->distributeByOrganizations($newClaim, $data);
-
-        return $newClaim;
-    }
-
-    /**
-     * @param $data
-     * @return Claim - сохранение заявки на основе АТС Мегафон
-     */
-    private function saveClaim($data): Claim
+    public function update($data): Claim
     {
         $this->addressRepository->update([
             'address_id' => $data['address']['id'],
@@ -109,34 +81,6 @@ class ClaimService
             'email' => $data['email'],
             'status' => 'created'
         ]);
-    }
-
-    /**
-     * @param Claim $newClaim
-     * @param $data
-     * @return mixed
-     * 1. Получить все ответственные организации
-     * 2. Назначить выполнение заявки данным организациям
-     */
-    private function distributeByOrganizations(Claim $newClaim, $data)
-    {
-        $responsibleOrganizations =  $this->getOrganizationsRelatedToProblem($data['problem']['id']);
-
-        $responsibleOrganizations->map(function ($organization) use ($newClaim) {
-            $this->claimRepository->assignClaimToResponsibleOrganization($newClaim, $organization->id, 'hide');
-        });
-
-        return true;
-    }
-
-    /**
-     * @param $problemId
-     * Получить организации, которые могут решить данный вид проблемы
-     * @return \Illuminate\Support\Collection - организации по ид проблемы
-     */
-    private function getOrganizationsRelatedToProblem($problemId): Collection
-    {
-        return $this->organizationRepository->getOrganizationsByProblem($problemId);
     }
 
     /**
@@ -204,6 +148,16 @@ class ClaimService
             ),
             'pages' => ceil($this->claimRepository->getPagesCount($resolvedDispatchStatus) / $this->claimsPerPage)
         ];
+    }
+
+    /**
+     * @param $phone
+     * @return mixed
+     * Получить все предыдущие заявки по номеру телефона
+     */
+    public function getPreviousByPhone($phone)
+    {
+        return $this->claimRepository->getByPhone($phone);
     }
 
 

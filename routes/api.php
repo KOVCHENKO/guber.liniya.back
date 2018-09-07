@@ -45,6 +45,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         Route::get('all/{page}/{dispatch_status}', 'ClaimController@getAll')->middleware('role:dispatcher,editor,supervisor');
         Route::get('search/{page}/{search}/{dispatch_status}', 'ClaimController@search')->middleware('role:dispatcher');
         Route::post('create', 'ClaimController@create')->middleware('role:dispatcher');
+        Route::post('get_previous_by_phone', 'ClaimController@getPreviousByPhone')->middleware('role:dispatcher,editor,supervisor');
     });
 
     Route::prefix('/specialists/')->namespace('Functional')->middleware('role:specialist')->group(function() {
@@ -60,7 +61,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
     Route::prefix('/calls')->namespace('Functional')->middleware('role:dispatcher')->group(function() {
         Route::get('/all/{page}', 'CallController@getAll');
-        Route::get('get_previous_by_phone/{page}', 'CallController@getPreviousByPhone');
+        Route::get('/mark_call_as_faulty/{call_id}', 'CallController@markCallAsFaulty');
     });
 
 });

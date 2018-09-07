@@ -55,6 +55,11 @@ class ClaimController extends Controller
         return response($this->claimService->search($page, $search, $dispatchStatus), 200);
     }
 
+    public function getPreviousByPhone(Request $request)
+    {
+        return response($this->claimService->getPreviousByPhone($request->phone), 200);
+    }
+
 
 
 }

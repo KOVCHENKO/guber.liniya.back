@@ -37,4 +37,9 @@ class CallController
     {
         return $this->callService->all($page);
     }
+
+    public function markCallAsFaulty($callId)
+    {
+        return $this->callService->markCallAsFaulty($callId);
+    }
 }
