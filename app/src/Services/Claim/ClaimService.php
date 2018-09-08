@@ -6,18 +6,17 @@ namespace App\src\Services\Claim;
 use App\src\Models\Claim;
 use App\src\Repositories\AddressRepository;
 use App\src\Repositories\ClaimRepository;
-use App\src\Repositories\OrganizationRepository;
 use App\src\Services\Call\CallService;
+use App\src\Services\Claim\DispatchStatus\DispatchStatusProcessing;
 use App\src\Services\Claim\PIDStatus\PIDResolver;
-use Illuminate\Support\Collection;
 
 class ClaimService
 {
     protected $claimRepository;
     protected $addressRepository;
-    protected $organizationRepository;
-    protected $callRepository;
+    protected $callService;
     protected $pidResolver;
+    protected $dispatchStatusProcessing;
 
     protected $claimsPerPage = 10;
 
@@ -27,17 +26,20 @@ class ClaimService
      * @param AddressRepository $addressRepository
      * @param CallService $callService
      * @param PIDResolver $PIDResolver
+     * @param DispatchStatusProcessing $dispatchStatusProcessing
      */
     public function __construct(
         ClaimRepository $claimRepository,
         AddressRepository $addressRepository,
         CallService $callService,
-        PIDResolver $PIDResolver)
+        PIDResolver $PIDResolver,
+        DispatchStatusProcessing $dispatchStatusProcessing)
     {
         $this->claimRepository = $claimRepository;
         $this->addressRepository = $addressRepository;
         $this->callService = $callService;
         $this->pidResolver = $PIDResolver;
+        $this->dispatchStatusProcessing = $dispatchStatusProcessing;
     }
 
     /**
@@ -58,17 +60,21 @@ class ClaimService
 
     /**
      * @param $data
-     * 1. Создать заявку (на основе уже существующей в БД из АТС Мегафон
-     * 2. Распределить по организациям
+     * 1. Обновить адрес заявки
+     * 2. При необходимости обнвоить статус видимости для организации
+     * 3. Обновить саму заявку
+     * @param $dispatchStatusToUpdate
      * @return mixed
      */
-    public function update($data): Claim
+    public function update($data, $dispatchStatusToUpdate): Claim
     {
         $this->addressRepository->update([
             'address_id' => $data['address']['id'],
             'district' => $data['address']['district'],
             'location' => $data['address']['location']
         ]);
+
+        $this->dispatchStatusProcessing->updateVisibilityOfClaimsForOrganizations($data['id'], $dispatchStatusToUpdate);
 
         return $this->claimRepository->update([
             'id' => $data['id'],
@@ -79,7 +85,8 @@ class ClaimService
             'description' => $data['description'],
             'phone' => $data['phone'],
             'email' => $data['email'],
-            'status' => 'created'
+            'status' => 'created',
+            'dispatch_status' => $dispatchStatusToUpdate
         ]);
     }
 
@@ -91,7 +98,7 @@ class ClaimService
      */
     public function getAll($page, $dispatchStatus)
     {
-        $resolvedDispatchStatus = $this->resolveDispatchStatus($dispatchStatus);
+        $resolvedDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus($dispatchStatus);
         $claims = $this->claimRepository->getAll(
             $this->claimsPerPage,
             $this->getSkippedItems($page),
@@ -103,22 +110,6 @@ class ClaimService
             'pages' => ceil($this->claimRepository->getPagesCount($resolvedDispatchStatus) / $this->claimsPerPage)
         ];
     }
-
-    private function resolveDispatchStatus($dispatchStatus)
-    {
-        switch ($dispatchStatus) {
-            case 'all':             // для диспетчера
-                return ['raw', 'edited', 'dispatched', 'prepared'];
-                break;
-            case 'prepared':        // для редактора
-                return ['prepared'];
-                break;
-            case 'edited':          // для супервизора-отправителя
-                return ['edited', 'dispatched'];
-                break;
-        }
-    }
-
 
     private function getSkippedItems($page)
     {
@@ -137,7 +128,7 @@ class ClaimService
      */
     public function search($page, $search, $dispatchStatus)
     {
-        $resolvedDispatchStatus = $this->resolveDispatchStatus($dispatchStatus);
+        $resolvedDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus($dispatchStatus);
 
         return [
             'claims' => $this->claimRepository->search(

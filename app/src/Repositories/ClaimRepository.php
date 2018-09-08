@@ -62,6 +62,7 @@ class ClaimRepository
         $claimToUpdate->phone = $claim['phone'];
         $claimToUpdate->email = $claim['email'];
         $claimToUpdate->status = 'created';
+        $claimToUpdate->dispatch_status = $claim['dispatch_status'];
         $claimToUpdate->save();
 
         return $claimToUpdate;

@@ -47,7 +47,8 @@ class ChildClaim implements PIDClaimInterface
             'address_id' => $address['id'],
             'call_id' => $data['call']['id'],
             'problem_id' => $data['problem']['id'],
-            'status' => 'created'
+            'status' => 'created',
+            'dispatch_status' => 'prepared'
         ]);
 
         $this->claimRepository->assignClaimToResponsibleOrganization(

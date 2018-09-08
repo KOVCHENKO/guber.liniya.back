@@ -45,6 +45,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         Route::get('all/{page}/{dispatch_status}', 'ClaimController@getAll')->middleware('role:dispatcher,editor,supervisor');
         Route::get('search/{page}/{search}/{dispatch_status}', 'ClaimController@search')->middleware('role:dispatcher');
         Route::post('create', 'ClaimController@create')->middleware('role:dispatcher');
+        Route::post('update/{dispatch_status_to_update}', 'ClaimController@update')->middleware('role:dispatcher,editor,supervisor');
         Route::post('get_previous_by_phone', 'ClaimController@getPreviousByPhone')->middleware('role:dispatcher,editor,supervisor');
     });
 
