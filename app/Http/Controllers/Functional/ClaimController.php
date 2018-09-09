@@ -40,7 +40,8 @@ class ClaimController extends Controller
      * Создание заявления/жалобы
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
-    public function create(Request $request) {
+    public function create(Request $request) 
+    {
         return response($this->claimService->createViaUpdating($request->all()), 200);
     }
 
@@ -55,6 +56,22 @@ class ClaimController extends Controller
         return response($this->claimService->search($page, $search, $dispatchStatus), 200);
     }
 
+    /**
+     * @param $id - айди заявки
+     * @param $status - статус заявки
+     * Изменение статуса заявки (created/assigned/executed/rejected) 
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function updateStatus($id, $status) 
+    {
+        return response($this->claimRepository->updateStatus($id, $status), 200);
+    }
 
+    //TODO: return value
+    public function changeOrganization($id, $idOldOrganization, $idNewOrganization)
+    {
+        $this->claimService->changeOrganization($id, $idOldOrganization, $idNewOrganization);
+        return response('success', 200);
+    } 
 
 }

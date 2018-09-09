@@ -18,6 +18,11 @@ class ClaimRepository
         $this->claim = $claim;
     }
 
+    public function findClaim($id): Claim
+    {
+        return $this->claim->find($id);
+    }
+
     /**
      * @param $take - кол-во получаемых элементов
      * @param $skip - оффсет, пропустить элементы
@@ -48,7 +53,7 @@ class ClaimRepository
 
     public function update($claim): Claim
     {
-        $claimToUpdate = $this->claim->find($claim['id']);
+        $claimToUpdate = $this->findClaim($claim['id']);
 
         $claimToUpdate->id = $claim['id'];
         $claimToUpdate->firstname = $claim['firstname'];
@@ -74,6 +79,16 @@ class ClaimRepository
         $claim->organizations()->attach($organizationId);
     }
 
+    /**
+     * @param Claim $claim
+     * @param $organizationId - id организации
+     * @return void
+     */
+    public function detachClaimToResponsibleOrganization(Claim $claim, $organizationId)
+    {
+        $claim->organizations()->detach($organizationId);
+    }
+
     public function getPagesCount($resolvedDispatchStatus)
     {
         return $this->claim
@@ -91,6 +106,14 @@ class ClaimRepository
             ->where('description', 'like', '%'.$search.'%')
             ->whereIn('dispatch_status', $resolvedDispatchStatus)
             ->get();
+    }
+
+    public function updateStatus($id, $status): Claim
+    {
+        $claim = $this->findClaim($id);
+        $claim->status = $status;
+        $claim->save();
+        return $claim;
     }
 
 }
