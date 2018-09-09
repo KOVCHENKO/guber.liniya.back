@@ -103,7 +103,7 @@ class ClaimRepository
     /**
      * @param $phone
      * Получить все предыдущие, созданные заявки с определенным номером телефона
-     * @return - возвращает список заявок с одинаковым номером телефона
+     * @return  - возвращает список заявок с одинаковым номером телефона
      */
     public function getByPhone($phone)
     {
@@ -124,6 +124,16 @@ class ClaimRepository
         return DB::table('claims_organizations')
             ->where('claim_id', $claimId)
             ->first();
+    }
+
+    /**
+     * @param $pid
+     * @return mixed
+     * Получить родительскую заявку
+     */
+    public function getParentClaim($pid)
+    {
+        return $this->claim->find($pid);
     }
 
 }

@@ -48,6 +48,7 @@ class ChildClaim implements PIDClaimInterface
             'call_id' => $data['call']['id'],
             'problem_id' => $data['problem']['id'],
             'status' => 'created',
+            'pid' => $data['pid'],
             'dispatch_status' => 'prepared'
         ]);
 

@@ -105,6 +105,10 @@ class ClaimService
             $resolvedDispatchStatus
         );
 
+        $claims->map(function ($claim) {
+            return $this->pidResolver->getParentClaims($claim);
+        });
+
         return [
             'claims' => $claims,
             'pages' => ceil($this->claimRepository->getPagesCount($resolvedDispatchStatus) / $this->claimsPerPage)
