@@ -3,6 +3,7 @@
 namespace App\src\Services\Call;
 
 
+use App\src\Models\Call;
 use App\src\Repositories\CallRepository;
 use App\src\Services\Util\Pagination;
 use Illuminate\Support\Facades\Log;
@@ -78,6 +79,29 @@ class CallService
             'pages' => ceil($this->callRepository->getPagesCount() / $this->paginator->itemsPerPage)
         ];
 
+    }
+
+    /**
+     * @param $call
+     * Обновить информацию о звонке - processing_status
+     * @return Call
+     */
+    public function updateCall($call)
+    {
+        return $this->callRepository->update($call);
+    }
+
+    /**
+     * @param $callId
+     * Пометить звонок как ошибочный
+     */
+    public function markCallAsFaulty($callId)
+    {
+        $callToUpdate = new Call();
+        $callToUpdate['id'] = $callId;
+        $callToUpdate['processingStatus'] = 'failed';
+
+        $this->callRepository->update($callToUpdate);
     }
 
 

@@ -127,17 +127,32 @@ class OrganizationRepository
     }
 
     /**
-     * @param $problemId
-     * Получить все зявки, которые пренадлежат данной организации
+     * @param $organizationId
      * @return \Illuminate\Support\Collection
+     * Получить заявки организации
      */
     public function getClaimsToOrganization($organizationId)
     {
         return $this->getById($organizationId)->claims()->orderBy('name')->get();
     }
-    
+
+    /**
+     * @param $organizationId
+     * @return \Illuminate\Database\Eloquent\Collection
+     * Получить дочерние организации
+     */
     public function getChildOrganization($organizationId)
     {
         return $this->getById($organizationId)->children()->get();
+    }
+
+    /**
+     * Сменить видимость
+     * @param int $claimId
+     */
+    public function changeClaimVisibilityForOrganization(int $claimId) {
+        DB::table('claims_organizations')
+            ->where('claim_id', $claimId)
+            ->update(['visibility' => 'show']);
     }
 }

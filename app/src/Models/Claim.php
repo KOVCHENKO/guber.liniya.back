@@ -12,7 +12,7 @@ class Claim extends Model
     protected $fillable = [
         'name', 'description',
         'firstname', 'middlename', 'lastname', 'phone', 'email', 'address_id',
-        'link', 'ats_status', 'problem_id', 'status', 'dispatch_status'
+        'link', 'ats_status', 'problem_id', 'status', 'dispatch_status', 'pid'
     ];
 
     public function organizations()

@@ -4,23 +4,19 @@ namespace App\Http\Controllers\Functional;
 
 
 use App\Http\Controllers\Controller;
-use App\src\Repositories\ClaimRepository;
 use App\src\Services\Claim\ClaimService;
 use Illuminate\Http\Request;
 
 class ClaimController extends Controller
 {
-    protected $claimRepository;
     protected $claimService;
 
     /**
      * ClaimController constructor.
-     * @param ClaimRepository $claimRepository
      * @param ClaimService $claimService
      */
-    public function __construct(ClaimRepository $claimRepository, ClaimService $claimService)
+    public function __construct(ClaimService $claimService)
     {
-        $this->claimRepository = $claimRepository;
         $this->claimService = $claimService;
     }
 
@@ -40,9 +36,14 @@ class ClaimController extends Controller
      * Создание заявления/жалобы
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
-    public function create(Request $request) 
+    public function create(Request $request)
     {
-        return response($this->claimService->createViaUpdating($request->all()), 200);
+        return response($this->claimService->createBasedOnCall($request->all()), 200);
+    }
+
+    public function update(Request $request, $dispatchStatusToUpdate)
+    {
+        return response($this->claimService->update($request->all(), $dispatchStatusToUpdate), 200);
     }
 
     /**
@@ -65,6 +66,15 @@ class ClaimController extends Controller
     public function updateStatus($id, $status) 
     {
         return response($this->claimRepository->updateStatus($id, $status), 200);
+    }
+    
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * Получить предыдущие заявки по номеру телефона
+     */
+    public function getPreviousByPhone(Request $request)
+    {
+        return response($this->claimService->getPreviousByPhone($request->phone), 200);
     }
 
     //TODO: return value

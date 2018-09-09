@@ -4,6 +4,9 @@ namespace App\src\Repositories;
 
 
 use App\src\Models\Claim;
+use App\src\Models\Organization;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ClaimRepository
 {
@@ -64,6 +67,7 @@ class ClaimRepository
         $claimToUpdate->phone = $claim['phone'];
         $claimToUpdate->email = $claim['email'];
         $claimToUpdate->status = 'created';
+        $claimToUpdate->dispatch_status = $claim['dispatch_status'];
         $claimToUpdate->save();
 
         return $claimToUpdate;
@@ -74,9 +78,12 @@ class ClaimRepository
      * @param $organizationId - id организации
      * @return void
      */
-    public function assignClaimToResponsibleOrganization(Claim $claim, $organizationId)
+    public function assignClaimToResponsibleOrganization(Claim $claim, $organizationId, $visibility)
     {
-        $claim->organizations()->attach($organizationId);
+        $claim->organizations()->attach($organizationId, [
+            'visibility' => $visibility,
+            'created_at' => Carbon::now()
+        ]);
     }
 
     /**
@@ -114,6 +121,42 @@ class ClaimRepository
         $claim->status = $status;
         $claim->save();
         return $claim;
+    }
+    
+    /**
+     * @param $phone
+     * Получить все предыдущие, созданные заявки с определенным номером телефона
+     * @return  - возвращает список заявок с одинаковым номером телефона
+     */
+    public function getByPhone($phone)
+    {
+        return $this->claim
+            ->where('phone', $phone)
+            ->with('problem')
+            ->with('address')
+            ->get();
+    }
+
+    /**
+     * @param $pid
+     * Получтить организацию, которая решает данную заявку
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|null|object
+     */
+    public function getOrganizationWhichResolvesClaim(int $claimId)
+    {
+        return DB::table('claims_organizations')
+            ->where('claim_id', $claimId)
+            ->first();
+    }
+
+    /**
+     * @param $pid
+     * @return mixed
+     * Получить родительскую заявку
+     */
+    public function getParentClaim($pid)
+    {
+        return $this->claim->find($pid);
     }
 
 }

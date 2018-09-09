@@ -6,14 +6,17 @@ namespace App\src\Services\Claim;
 use App\src\Models\Claim;
 use App\src\Repositories\AddressRepository;
 use App\src\Repositories\ClaimRepository;
-use App\src\Repositories\OrganizationRepository;
-use Illuminate\Support\Collection;
+use App\src\Services\Call\CallService;
+use App\src\Services\Claim\DispatchStatus\DispatchStatusProcessing;
+use App\src\Services\Claim\PIDStatus\PIDResolver;
 
 class ClaimService
 {
     protected $claimRepository;
     protected $addressRepository;
-    protected $organizationRepository;
+    protected $callService;
+    protected $pidResolver;
+    protected $dispatchStatusProcessing;
 
     protected $claimsPerPage = 10;
 
@@ -21,73 +24,57 @@ class ClaimService
      * ClaimService constructor.
      * @param ClaimRepository $claimRepository
      * @param AddressRepository $addressRepository
-     * @param OrganizationRepository $organizationRepository
+     * @param CallService $callService
+     * @param PIDResolver $PIDResolver
+     * @param DispatchStatusProcessing $dispatchStatusProcessing
      */
     public function __construct(
         ClaimRepository $claimRepository,
         AddressRepository $addressRepository,
-        OrganizationRepository $organizationRepository)
+        CallService $callService,
+        PIDResolver $PIDResolver,
+        DispatchStatusProcessing $dispatchStatusProcessing)
     {
         $this->claimRepository = $claimRepository;
         $this->addressRepository = $addressRepository;
-        $this->organizationRepository = $organizationRepository;
+        $this->callService = $callService;
+        $this->pidResolver = $PIDResolver;
+        $this->dispatchStatusProcessing = $dispatchStatusProcessing;
     }
 
     /**
      * @param $data - array
      * Создает заявку на основе звонка
+     * @return mixed
      */
     public function createBasedOnCall($data)
     {
-        $data['address']['district'] = 'не заполнено';
-        $data['address']['location'] = 'не заполнено';
+        $updatedCall = $this->callService->updateCall($data['call']);
 
-        $address = $this->addressRepository->create([
-            'district' => $data['address']['district'],
-            'location' => $data['address']['location']
-        ]);
+        $pidStatusEntity = $this->pidResolver->resolvePidStatus($data['pid']);
+        $pidStatusEntity->createBasedOnCall($data);
 
-        $this->claimRepository->create([
-            'firstname' => 'не заполнено',
-            'lastname' => 'не заполнено',
-            'middlename' => 'не заполнено',
-            'name' => $data['callid'],
-            'description' => 'не заполнено',
-            'link' => $data['link'],
-            'ats_status' => $data['status'],
-            'phone' => $data['phone'],
-            'email' => 'не заполнено',
-            'address_id' => $address['id'],
-            'status' => 'created'
-        ]);
+        return $updatedCall;
 
     }
 
     /**
      * @param $data
-     * 1. Создать заявку (на основе уже существующей в БД из АТС Мегафон
-     * 2. Распределить по организациям
+     * 1. Обновить адрес заявки
+     * 2. При необходимости обнвоить статус видимости для организации
+     * 3. Обновить саму заявку
+     * @param $dispatchStatusToUpdate
      * @return mixed
      */
-    public function createViaUpdating($data)
-    {
-        $newClaim = $this->saveClaim($data);
-        $this->distributeByOrganizations($newClaim, $data);
-
-        return $newClaim;
-    }
-
-    /**
-     * @param $data
-     * @return Claim - сохранение заявки на основе АТС Мегафон
-     */
-    private function saveClaim($data): Claim
+    public function update($data, $dispatchStatusToUpdate): Claim
     {
         $this->addressRepository->update([
             'address_id' => $data['address']['id'],
             'district' => $data['address']['district'],
             'location' => $data['address']['location']
         ]);
+
+        $this->dispatchStatusProcessing->updateVisibilityOfClaimsForOrganizations($data['id'], $dispatchStatusToUpdate);
 
         return $this->claimRepository->update([
             'id' => $data['id'],
@@ -98,36 +85,9 @@ class ClaimService
             'description' => $data['description'],
             'phone' => $data['phone'],
             'email' => $data['email'],
-            'status' => 'created'
+            'status' => 'created',
+            'dispatch_status' => $dispatchStatusToUpdate
         ]);
-    }
-
-    /**
-     * @param Claim $newClaim
-     * @param $data
-     * @return mixed
-     * 1. Получить все ответственные организации
-     * 2. Назначить выполнение заявки данным организациям
-     */
-    private function distributeByOrganizations(Claim $newClaim, $data)
-    {
-        $responsibleOrganizations =  $this->getOrganizationsRelatedToProblem($data['problem']['id']);
-
-        $responsibleOrganizations->map(function ($organization) use ($newClaim) {
-            $this->claimRepository->assignClaimToResponsibleOrganization($newClaim, $organization->id);
-        });
-
-        return true;
-    }
-
-    /**
-     * @param $problemId
-     * Получить организации, которые могут решить данный вид проблемы
-     * @return \Illuminate\Support\Collection - организации по ид проблемы
-     */
-    private function getOrganizationsRelatedToProblem($problemId): Collection
-    {
-        return $this->organizationRepository->getOrganizationsByProblem($problemId);
     }
 
     /**
@@ -138,34 +98,22 @@ class ClaimService
      */
     public function getAll($page, $dispatchStatus)
     {
-        $resolvedDispatchStatus = $this->resolveDispatchStatus($dispatchStatus);
+        $resolvedDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus($dispatchStatus);
         $claims = $this->claimRepository->getAll(
             $this->claimsPerPage,
             $this->getSkippedItems($page),
             $resolvedDispatchStatus
         );
 
+        $claims->map(function ($claim) {
+            return $this->pidResolver->getParentClaims($claim);
+        });
+
         return [
             'claims' => $claims,
             'pages' => ceil($this->claimRepository->getPagesCount($resolvedDispatchStatus) / $this->claimsPerPage)
         ];
     }
-
-    private function resolveDispatchStatus($dispatchStatus)
-    {
-        switch ($dispatchStatus) {
-            case 'all':             // для диспетчера
-                return ['raw', 'edited', 'dispatched', 'prepared'];
-                break;
-            case 'prepared':        // для редактора
-                return ['prepared'];
-                break;
-            case 'edited':          // для супервизора-отправителя
-                return ['edited', 'dispatched'];
-                break;
-        }
-    }
-
 
     private function getSkippedItems($page)
     {
@@ -184,7 +132,7 @@ class ClaimService
      */
     public function search($page, $search, $dispatchStatus)
     {
-        $resolvedDispatchStatus = $this->resolveDispatchStatus($dispatchStatus);
+        $resolvedDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus($dispatchStatus);
 
         return [
             'claims' => $this->claimRepository->search(
@@ -204,5 +152,14 @@ class ClaimService
         $this->claimRepository->assignClaimToResponsibleOrganization($claim, $idNewOrganization);
     }
 
+    /**
+     * @param $phone
+     * @return mixed
+     * Получить все предыдущие заявки по номеру телефона
+     */
+    public function getPreviousByPhone($phone)
+    {
+        return $this->claimRepository->getByPhone($phone);
+    }
 
 }

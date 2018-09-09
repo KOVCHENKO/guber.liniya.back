@@ -48,6 +48,8 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         Route::get('update_status/{id}/{status}', 'ClaimController@updateStatus')->middleware('role:specialist');
         Route::get('change_organization/{id}/{id_old_organization}/{id_new_organization}', 'ClaimController@changeOrganization')
             ->middleware('role:specialist');
+        Route::post('update/{dispatch_status_to_update}', 'ClaimController@update')->middleware('role:dispatcher,editor,supervisor');
+        Route::post('get_previous_by_phone', 'ClaimController@getPreviousByPhone')->middleware('role:dispatcher,editor,supervisor');
     });
 
     Route::prefix('/specialists/')->namespace('Functional')->middleware('role:specialist')->group(function() {
@@ -59,9 +61,15 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('/problems/delete/{id}', 'Functional\ProblemController@delete')->middleware('role:admin');
     Route::get('/problems/get_by_id/{id}', 'Functional\ProblemController@getById')->middleware('role:admin');
     Route::post('/problems/update/{id}', 'Functional\ProblemController@update')->middleware('role:admin');
+    Route::get('/problems/get_organizations_of_problem/{problem_id}', 'Functional\ProblemController@getOrganizationsOfProblem')->middleware('role:dispatcher');
+
+    Route::prefix('/calls')->namespace('Functional')->middleware('role:dispatcher')->group(function() {
+        Route::get('/all/{page}', 'CallController@getAll');
+        Route::get('/mark_call_as_faulty/{call_id}', 'CallController@markCallAsFaulty');
+    });
 
 });
 
-Route::get('/claims/export', 'Analytics\ClaimExportController@export');
 Route::post('/calls/get_call', 'Functional\CallController@receive');
-Route::get('/calls/all/{page}', 'Functional\CallController@getAll');
+
+Route::get('/claims/export', 'Analytics\ClaimExportController@export');

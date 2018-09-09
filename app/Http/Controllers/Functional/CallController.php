@@ -30,9 +30,16 @@ class CallController
 
     /**
      * Получтиь все звонки из БД
+     * @param $page
+     * @return \App\src\Models\Call[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getAll($page)
     {
         return $this->callService->all($page);
+    }
+
+    public function markCallAsFaulty($callId)
+    {
+        return $this->callService->markCallAsFaulty($callId);
     }
 }
