@@ -133,7 +133,7 @@ class OrganizationRepository
      */
     public function getClaimsToOrganization($organizationId)
     {
-        return $this->getById($organizationId)->claims()->orderBy('name')->get();
+        return $this->getById($organizationId)->claims()->whereNotIn('status', ['rejected'])->orderBy('name')->get();
     }
 
     /**

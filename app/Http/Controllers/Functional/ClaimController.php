@@ -6,18 +6,21 @@ namespace App\Http\Controllers\Functional;
 use App\Http\Controllers\Controller;
 use App\src\Services\Claim\ClaimService;
 use Illuminate\Http\Request;
+use App\src\Repositories\ClaimRepository;
 
 class ClaimController extends Controller
 {
     protected $claimService;
+    protected $claimRepository;
 
     /**
      * ClaimController constructor.
      * @param ClaimService $claimService
      */
-    public function __construct(ClaimService $claimService)
+    public function __construct(ClaimService $claimService, ClaimRepository $claimRepository)
     {
         $this->claimService = $claimService;
+        $this->claimRepository = $claimRepository;
     }
 
     /**
@@ -68,6 +71,7 @@ class ClaimController extends Controller
         return response($this->claimRepository->updateStatus($id, $status), 200);
     }
     
+    /**
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * Получить предыдущие заявки по номеру телефона

@@ -62,6 +62,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('/problems/get_by_id/{id}', 'Functional\ProblemController@getById')->middleware('role:admin');
     Route::post('/problems/update/{id}', 'Functional\ProblemController@update')->middleware('role:admin');
     Route::get('/problems/get_organizations_of_problem/{problem_id}', 'Functional\ProblemController@getOrganizationsOfProblem')->middleware('role:dispatcher');
+    Route::post('/comments/create', 'Functional\CommentController@create')->middleware('role:specialist');
 
     Route::prefix('/calls')->namespace('Functional')->middleware('role:dispatcher')->group(function() {
         Route::get('/all/{page}', 'CallController@getAll');
