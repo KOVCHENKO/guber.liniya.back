@@ -49,7 +49,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         Route::post('get_previous_by_phone', 'ClaimController@getPreviousByPhone')->middleware('role:dispatcher,editor,supervisor');
     });
 
-    Route::prefix('/specialists/')->namespace('Functional')->middleware('role:specialist')->group(function() {
+    Route::prefix('/specialists/')->namespace('Functional')->middleware('role:specialist,admin')->group(function() {
        Route::get('get_specialists_of_organization/{organization_id}', 'SpecialistController@getSpecialistsOfOrganization');
        Route::post('create_specialist/{organization_id}', 'SpecialistController@createSpecialist');
     });
