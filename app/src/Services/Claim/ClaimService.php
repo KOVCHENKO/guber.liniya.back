@@ -145,6 +145,13 @@ class ClaimService
         ];
     }
 
+    public function changeOrganization($id, $idOldOrganization, $idNewOrganization)
+    {
+        $claim = $this->claimRepository->findClaim($id);
+        $this->claimRepository->detachClaimToResponsibleOrganization($claim, $idOldOrganization);
+        $this->claimRepository->assignClaimToResponsibleOrganization($claim, $idNewOrganization);
+    }
+
     /**
      * @param $phone
      * @return mixed
@@ -154,6 +161,5 @@ class ClaimService
     {
         return $this->claimRepository->getByPhone($phone);
     }
-
 
 }
