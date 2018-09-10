@@ -86,6 +86,11 @@ class ClaimRepository
         ]);
     }
 
+    public function reassignClaimToResponsibleOrganization(Claim $claim, $organizationId)
+    {	
+        $claim->organizations()->attach($organizationId);
+    }
+
     /**
      * @param Claim $claim
      * @param $organizationId - id организации

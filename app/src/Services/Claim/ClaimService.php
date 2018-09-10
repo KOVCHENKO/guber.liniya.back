@@ -149,7 +149,7 @@ class ClaimService
     {
         $claim = $this->claimRepository->findClaim($id);
         $this->claimRepository->detachClaimToResponsibleOrganization($claim, $idOldOrganization);
-        $this->claimRepository->assignClaimToResponsibleOrganization($claim, $idNewOrganization);
+        $this->claimRepository->reassignClaimToResponsibleOrganization($claim, $idNewOrganization);
     }
 
     /**
