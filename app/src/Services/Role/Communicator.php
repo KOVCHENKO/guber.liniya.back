@@ -10,6 +10,6 @@ class Communicator implements RoleTypeInterface
 
     public function getCabinets()
     {
-        new Cabinet(1, 'Заявки', 'applications', 'communicator_applications');
+        new Cabinet(1, 'Заявки', 'communicator_applications', 'communicator_applications');
     }
 }

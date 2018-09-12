@@ -7,21 +7,21 @@ class Cabinet
 {
     public $id;
     public $name;
-    public $icon;
+    public $routeName;
     public $route;
 
     /**
      * Cabinet constructor.
      * @param $id
      * @param $name
-     * @param $icon
+     * @param $routeName
      * @param $route
      */
-    public function __construct($id, $name, $icon, $route)
+    public function __construct($id, $name, $routeName, $route)
     {
         $this->id = $id;
         $this->name = $name;
-        $this->icon = $icon;
+        $this->routeName = $routeName;
         $this->route = $route;
     }
 

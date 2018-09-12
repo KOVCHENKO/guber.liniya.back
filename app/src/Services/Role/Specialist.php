@@ -30,8 +30,8 @@ class Specialist implements RoleTypeInterface
     public function getCabinets()
     {
         return [
-            new Cabinet(1, 'Заявки', 'applications', 'specialist_applications'),
-            new Cabinet(2, 'Организации', 'organizations', 'specialist_organizations')
+            new Cabinet(1, 'Заявки', 'specialist_applications', 'specialist_applications'),
+            new Cabinet(2, 'Организации', 'specialist_organizations', 'specialist_organizations')
         ];
     }
 
