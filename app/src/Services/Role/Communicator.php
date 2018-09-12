@@ -7,9 +7,12 @@ use App\src\Services\Role\Entities\Cabinet;
 
 class Communicator implements RoleTypeInterface
 {
+    public $type = 'communicator';
 
     public function getCabinets()
     {
-        new Cabinet(1, 'Заявки', 'applications', 'communicator_applications');
+        return [
+            new Cabinet(1, 'Заявки', 'applications', 'communicator_applications')
+        ];
     }
 }

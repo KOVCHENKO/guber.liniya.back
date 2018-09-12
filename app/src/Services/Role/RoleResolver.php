@@ -18,10 +18,11 @@ class RoleResolver
         Analyst $analyst,
         Dispatcher $dispatcher,
         Editor $editor,
-        Supervisor $supervisor
+        Supervisor $supervisor,
+        Communicator $communicator
     )
     {
-        $rolesCollection = collect([$admin, $specialist, $analyst, $dispatcher, $editor, $supervisor]);
+        $rolesCollection = collect([$admin, $specialist, $analyst, $dispatcher, $editor, $supervisor, $communicator]);
         $this->rolesCollection = $rolesCollection;
     }
 

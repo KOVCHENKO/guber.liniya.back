@@ -6,6 +6,7 @@ namespace App\src\Repositories;
 use App\src\Models\Claim;
 use App\src\Models\Organization;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ClaimRepository
@@ -115,7 +116,11 @@ class ClaimRepository
             ->with('address')
             ->take($take)
             ->skip($skip)
-            ->where('description', 'like', '%'.$search.'%')
+            ->where('created_at', 'like', '%'.$search.'%')
+            ->orWhere('firstname', 'like', '%'.$search.'%')
+            ->orWhere('lastname', 'like', '%'.$search.'%')
+            ->orWhere('middlename', 'like', '%'.$search.'%')
+            ->orWhere('phone', 'like', '%'.$search.'%')
             ->whereIn('dispatch_status', $resolvedDispatchStatus)
             ->get();
     }
@@ -127,7 +132,7 @@ class ClaimRepository
         $claim->save();
         return $claim;
     }
-    
+
     /**
      * @param $phone
      * Получить все предыдущие, созданные заявки с определенным номером телефона
@@ -162,6 +167,32 @@ class ClaimRepository
     public function getParentClaim($pid)
     {
         return $this->claim->find($pid);
+    }
+
+    /**
+     * @return mixed
+     * Получить заявки со статусом выполнено
+     */
+    public function getExecutedClaims(): Collection
+    {
+        return $this->claim
+            ->with('problem')
+            ->with('address')
+            ->where('status', 'executed')
+            ->get();
+    }
+
+    public function getById($claimId): Claim
+    {
+        return $this->claim->find($claimId);
+    }
+
+    public function changeCloseCStatus(Claim $claim, $closeStatus): Claim
+    {
+        $claim->close_status = $closeStatus;
+        $claim->save();
+
+        return $claim;
     }
 
 }

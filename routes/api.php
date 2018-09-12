@@ -43,13 +43,15 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
     Route::prefix('/claims/')->namespace('Functional')->group(function(){
         Route::get('all/{page}/{dispatch_status}', 'ClaimController@getAll')->middleware('role:dispatcher,editor,supervisor');
-        Route::get('search/{page}/{search}/{dispatch_status}', 'ClaimController@search')->middleware('role:dispatcher');
+        Route::post('search', 'ClaimController@search')->middleware('role:dispatcher');
         Route::post('create', 'ClaimController@create')->middleware('role:dispatcher');
         Route::get('update_status/{id}/{status}', 'ClaimController@updateStatus')->middleware('role:specialist');
         Route::get('change_organization/{id}/{id_old_organization}/{id_new_organization}', 'ClaimController@changeOrganization')
             ->middleware('role:specialist');
         Route::post('update/{dispatch_status_to_update}', 'ClaimController@update')->middleware('role:dispatcher,editor,supervisor');
         Route::post('get_previous_by_phone', 'ClaimController@getPreviousByPhone')->middleware('role:dispatcher,editor,supervisor');
+        Route::get('get_executed_claims', 'ClaimController@getExecutedClaims')->middleware('role:dispatcher,editor,supervisor,communicator');
+        Route::get('change_close_status/{claim_id}/{close_status}', 'ClaimController@changeCloseStatus')->middleware('role:communicator');
     });
 
     Route::prefix('/specialists/')->namespace('Functional')->middleware('role:specialist,admin')->group(function() {

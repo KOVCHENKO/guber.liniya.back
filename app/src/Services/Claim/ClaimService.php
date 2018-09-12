@@ -9,6 +9,7 @@ use App\src\Repositories\ClaimRepository;
 use App\src\Services\Call\CallService;
 use App\src\Services\Claim\DispatchStatus\DispatchStatusProcessing;
 use App\src\Services\Claim\PIDStatus\PIDResolver;
+use Illuminate\Support\Collection;
 
 class ClaimService
 {
@@ -160,6 +161,26 @@ class ClaimService
     public function getPreviousByPhone($phone)
     {
         return $this->claimRepository->getByPhone($phone);
+    }
+
+    /**
+     * @return mixed
+     * Получить заявки со статусом выполнено
+     */
+    public function getExecutedClaims(): Collection
+    {
+        return $this->claimRepository->getExecutedClaims();
+    }
+
+    /**
+     * @param $claimId - id заявки
+     * @param $closeStatus - статус закрытия заявки (NOT_CALLED, NOT_EXECUTED, EXECUTED_PARTIALLY, EXECUTED_TOTALLY)
+     * @return
+     */
+    public function changeCloseStatus($claimId, $closeStatus): Claim
+    {
+        $claim = $this->claimRepository->getById($claimId);
+        return $this->claimRepository->changeCloseCStatus($claim, $closeStatus);
     }
 
 }

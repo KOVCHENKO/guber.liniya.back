@@ -50,14 +50,12 @@ class ClaimController extends Controller
     }
 
     /**
-     * @param $page - страница
-     * @param $search - строка поиска
-     * @param $dispatchStatus - все, отредактированные, для отправки
+     * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
-    public function search($page, $search, $dispatchStatus)
+    public function search(Request $request)
     {
-        return response($this->claimService->search($page, $search, $dispatchStatus), 200);
+        return response($this->claimService->search($request->page, $request->search, $request->dispatchStatus), 200);
     }
 
     /**
@@ -81,11 +79,37 @@ class ClaimController extends Controller
         return response($this->claimService->getPreviousByPhone($request->phone), 200);
     }
 
-    //TODO: return value
+    /**
+     * Получить заявки со статусом выполнено
+     */
+    public function getExecutedClaims()
+    {
+        return response($this->claimService->getExecutedClaims(), 200);
+    }
+
+    /**
+     * @param $id - ид заявки
+     * @param $idOldOrganization - ид старой организации
+     * @param $idNewOrganization - ид новой организации
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * Изменение организации, выполняющей заявку
+     */
     public function changeOrganization($id, $idOldOrganization, $idNewOrganization)
     {
         $this->claimService->changeOrganization($id, $idOldOrganization, $idNewOrganization);
         return response('success', 200);
-    } 
+    }
+
+    /**
+     * Изменение статуса проверки (закрытия заявки) - роль коммуникатора
+     * @param $claimId - ид заявки
+     * @param $closeStatus - статус закрытия (NOT_CALLED, NOT_EXECUTED, EXECUTED_PARTIALLY, EXECUTED_TOTALLY)
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function changeCloseStatus($claimId, $closeStatus)
+    {
+        return response($this->claimService->changeCloseStatus($claimId, $closeStatus), 200);
+    }
+
 
 }
