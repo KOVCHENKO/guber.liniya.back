@@ -30,4 +30,9 @@ class Claim extends Model
     {
         return $this->belongsTo(Address::class, 'address_id');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

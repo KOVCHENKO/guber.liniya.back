@@ -4,7 +4,6 @@ namespace App\src\Repositories;
 
 
 use App\src\Models\Claim;
-use App\src\Models\Organization;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +38,7 @@ class ClaimRepository
         return $this->claim
             ->with('problem')
             ->with('address')
+            ->with('comments')
             ->take($take)
             ->skip($skip)
             ->whereIn('dispatch_status', $dispatchStatus)
@@ -88,7 +88,7 @@ class ClaimRepository
     }
 
     public function reassignClaimToResponsibleOrganization(Claim $claim, $organizationId)
-    {	
+    {
         $claim->organizations()->attach($organizationId);
     }
 
@@ -114,6 +114,7 @@ class ClaimRepository
         return $this->claim
             ->with('problem')
             ->with('address')
+            ->with('comments')
             ->take($take)
             ->skip($skip)
             ->where('created_at', 'like', '%'.$search.'%')
@@ -136,14 +137,17 @@ class ClaimRepository
     /**
      * @param $phone
      * Получить все предыдущие, созданные заявки с определенным номером телефона
+     * Поулчить только отправленные (так как эти необходимы для поиска по номеру телефона
      * @return  - возвращает список заявок с одинаковым номером телефона
      */
     public function getByPhone($phone)
     {
         return $this->claim
             ->where('phone', $phone)
+            ->where('dispatch_status', 'dispatched')
             ->with('problem')
             ->with('address')
+            ->with('comments')
             ->get();
     }
 
@@ -178,6 +182,7 @@ class ClaimRepository
         return $this->claim
             ->with('problem')
             ->with('address')
+            ->with('comments')
             ->where('status', 'executed')
             ->get();
     }

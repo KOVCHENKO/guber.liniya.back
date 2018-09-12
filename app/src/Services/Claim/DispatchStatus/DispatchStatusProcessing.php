@@ -31,6 +31,9 @@ class DispatchStatusProcessing
             case 'edited':          // для супервизора-отправителя
                 return ['edited', 'dispatched'];
                 break;
+            case 'dispatched':
+                return ['dispatched'];
+                break;
         }
 
         return new Exception('There is no such dispatch status');
