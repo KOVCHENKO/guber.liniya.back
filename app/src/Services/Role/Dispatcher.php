@@ -13,7 +13,7 @@ class Dispatcher implements RoleTypeInterface
     {
         return [
             new Cabinet(1, 'Звонки', 'calls', '/calls'),
-            new Cabinet(2, 'Заявки', 'applications', '/dispatcher_applications/all'),
+            new Cabinet(2, 'Заявки', 'dispatcher_applications', '/dispatcher_applications/all'),
         ];
     }
 }
