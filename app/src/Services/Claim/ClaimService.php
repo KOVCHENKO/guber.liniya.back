@@ -9,6 +9,7 @@ use App\src\Repositories\ClaimRepository;
 use App\src\Services\Call\CallService;
 use App\src\Services\Claim\DispatchStatus\DispatchStatusProcessing;
 use App\src\Services\Claim\PIDStatus\PIDResolver;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class ClaimService
@@ -20,6 +21,7 @@ class ClaimService
     protected $dispatchStatusProcessing;
 
     protected $claimsPerPage = 10;
+    protected $daysForExpiration = 5;
 
     /**
      * ClaimService constructor.
@@ -106,8 +108,14 @@ class ClaimService
             $resolvedDispatchStatus
         );
 
+        // Получить родительские заявки
         $claims->map(function ($claim) {
             return $this->pidResolver->getParentClaims($claim);
+        });
+
+        // Выяснить, просрочена ли заявка
+        $claims->map(function(&$claim) {
+            $claim->expired = $this->checkIfClaimIsExpired($claim);
         });
 
         return [
@@ -135,13 +143,24 @@ class ClaimService
     {
         $resolvedDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus($dispatchStatus);
 
+        $claims = $this->claimRepository->search(
+            $this->claimsPerPage,
+            $this->getSkippedItems($page),
+            $search,
+            $resolvedDispatchStatus);
+
+        // Получить родительские заявки
+        $claims->map(function ($claim) {
+            return $this->pidResolver->getParentClaims($claim);
+        });
+
+        // Выяснить, просрочена ли заявка
+        $claims->map(function(&$claim) {
+            $claim->expired = $this->checkIfClaimIsExpired($claim);
+        });
+
         return [
-            'claims' => $this->claimRepository->search(
-                $this->claimsPerPage,
-                $this->getSkippedItems($page),
-                $search,
-                $resolvedDispatchStatus
-            ),
+            'claims' => $claims,
             'pages' => ceil($this->claimRepository->getPagesCount($resolvedDispatchStatus) / $this->claimsPerPage)
         ];
     }
@@ -181,6 +200,23 @@ class ClaimService
     {
         $claim = $this->claimRepository->getById($claimId);
         return $this->claimRepository->changeCloseCStatus($claim, $closeStatus);
+    }
+
+    /**
+     * @param $claim
+     * Проверить, истек ли срок выполнения заявки
+     * @return bool
+     */
+    public function checkIfClaimIsExpired($claim)
+    {
+        $dateOfExpiration = Carbon::parse($claim->created_at)->addDays($this->daysForExpiration);
+
+        if (Carbon::now()->gt($dateOfExpiration) &&
+            ($claim->status == 'created' || $claim->status == 'assigned')) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
