@@ -219,4 +219,22 @@ class ClaimService
         }
     }
 
+    /**
+     * @param $organizationId
+     * @param $claimId
+     * @return Claim
+     * Переназначить другой организации заявку, от выполнения которой отказалась первая организация
+     */
+    public function reassignRejectedClaim($organizationId, $claimId)
+    {
+        // Назначить новой организации
+        $claim = $this->claimRepository->findClaim($claimId);
+        $this->claimRepository->assignClaimToResponsibleOrganization($claim, $organizationId, 'show');
+
+        // Изменить статус на вновь созданную
+        $this->claimRepository->changeStatus($claim, 'created');
+        
+        return $claim;
+    }
+
 }

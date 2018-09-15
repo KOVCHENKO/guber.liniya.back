@@ -17,7 +17,7 @@ Route::get('/get_cabinets/{user_id}', 'Common\DesktopController@getCabinets');
 Route::group(['middleware' => 'jwt.auth'], function () {
 
     Route::prefix('/organizations/')->namespace('Functional')->group(function(){
-        Route::get('all', 'OrganizationController@getAll')->middleware('role:admin');
+        Route::get('all', 'OrganizationController@getAll')->middleware('role:admin,dispatcher,editor,supervisor');
         Route::post('create', 'OrganizationController@create')->middleware('role:admin');
         Route::post('update/{id}', 'OrganizationController@update')->middleware('role:admin');
         Route::get('get_by_id/{id}', 'OrganizationController@getById')->middleware('role:admin');
@@ -52,6 +52,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         Route::post('get_previous_by_phone', 'ClaimController@getPreviousByPhone')->middleware('role:dispatcher,editor,supervisor');
         Route::get('get_executed_claims', 'ClaimController@getExecutedClaims')->middleware('role:dispatcher,editor,supervisor,communicator');
         Route::get('change_close_status/{claim_id}/{close_status}', 'ClaimController@changeCloseStatus')->middleware('role:communicator');
+        Route::get('reassign_rejected_claim/{organization_id}/{claim_id}', 'ClaimController@reassignRejectedClaim')->middleware('role:dispatcher,editor,supervisor');
     });
 
     Route::prefix('/specialists/')->namespace('Functional')->middleware('role:specialist,admin')->group(function() {
@@ -76,3 +77,5 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 Route::post('/calls/get_call', 'Functional\CallController@receive');
 
 Route::get('/claims/export', 'Analytics\ClaimExportController@export');
+
+Route::post('/file/upload', 'Util\UploadController@uploadSingleFile');

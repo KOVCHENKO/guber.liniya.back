@@ -187,11 +187,22 @@ class ClaimRepository
             ->get();
     }
 
+    /**
+     * @param $claimId
+     * @return Claim
+     * Получить заявку по ид
+     */
     public function getById($claimId): Claim
     {
         return $this->claim->find($claimId);
     }
 
+    /**
+     * @param Claim $claim
+     * @param $closeStatus
+     * @return Claim
+     * Изменить статус закрытия заявки (коммуникатором)
+     */
     public function changeCloseCStatus(Claim $claim, $closeStatus): Claim
     {
         $claim->close_status = $closeStatus;
@@ -199,5 +210,21 @@ class ClaimRepository
 
         return $claim;
     }
+
+    /**
+     * @param Claim $claim
+     * @param $status
+     * @return Claim
+     * Изменить статус выполнения заявки
+     */
+    public function changeStatus(Claim $claim, $status): Claim
+    {
+        $claim->status = $status;
+        $claim->save();
+
+        return $claim;
+    }
+
+
 
 }

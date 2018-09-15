@@ -111,5 +111,16 @@ class ClaimController extends Controller
         return response($this->claimService->changeCloseStatus($claimId, $closeStatus), 200);
     }
 
+    /**
+     * @param $organizationId
+     * @param $claimId
+     * Переназначить другой организации заявку, от выполнения которой отказалась первая организация
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function reassignRejectedClaim($organizationId, $claimId)
+    {
+        return response($this->claimService->reassignRejectedClaim($organizationId, $claimId));
+    }
+
 
 }
