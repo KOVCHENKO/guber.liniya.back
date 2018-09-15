@@ -49,6 +49,7 @@ class NewClaim implements PIDClaimInterface
                 'address_id' => $address['id'],
                 'call_id' => $data['call']['id'],
                 'problem_id' => $data['problem']['id'],
+                'level' => $data['level'],
                 'status' => 'created',
                 'dispatch_status' => 'prepared'
             ]);
