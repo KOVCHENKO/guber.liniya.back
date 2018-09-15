@@ -25,6 +25,6 @@ class EditClaimsTableAddStatusColumn extends Migration
      */
     public function down()
     {
-c
+
     }
 }
