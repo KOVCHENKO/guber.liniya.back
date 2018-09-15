@@ -51,4 +51,13 @@ class DispatchStatusProcessing
             $this->organizationRepository->changeClaimVisibilityForOrganization($claimId);
         }
     }
+
+    public function establishDispatchStatusFilter($resolvedDispatchStatus, $dispatchStatusFilter)
+    {
+        if ($dispatchStatusFilter == 'all' || $dispatchStatusFilter == null) {
+            return $resolvedDispatchStatus;
+        }
+        return [$dispatchStatusFilter];
+    }
+
 }
