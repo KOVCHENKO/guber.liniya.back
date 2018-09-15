@@ -116,13 +116,15 @@ class ClaimRepository
             ->with('address')
             ->with('comments')
             ->take($take)
-            ->skip($skip)
-            ->where('created_at', 'like', '%'.$search.'%')
-            ->orWhere('firstname', 'like', '%'.$search.'%')
-            ->orWhere('lastname', 'like', '%'.$search.'%')
-            ->orWhere('middlename', 'like', '%'.$search.'%')
-            ->orWhere('phone', 'like', '%'.$search.'%')
+            ->skip($skip)            
             ->whereIn('dispatch_status', $resolvedDispatchStatus)
+            ->where(function ($query) use ($search) {
+                $query->where('created_at', 'like', '%'.$search.'%')
+                    ->orWhere('firstname', 'like', '%'.$search.'%')
+                    ->orWhere('lastname', 'like', '%'.$search.'%')
+                    ->orWhere('middlename', 'like', '%'.$search.'%')
+                    ->orWhere('phone', 'like', '%'.$search.'%');
+            })
             ->get();
     }
 

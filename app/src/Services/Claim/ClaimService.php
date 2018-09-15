@@ -97,11 +97,16 @@ class ClaimService
      * @param $page - получить согласно странице
      * Пока что по 10 записей на страницу (default)
      * @param $dispatchStatus - все, отредактированные, для отправки
+     * @param $dispatchStatusFilter - фильтр статуса диспетчера
      * @return Claim[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getAll($page, $dispatchStatus)
+    public function getAll($page, $dispatchStatus, $dispatchStatusFilter)
     {
         $resolvedDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus($dispatchStatus);
+        
+        // Использовать фильтр статуса диспетчера
+        $resolvedDispatchStatus = $this->dispatchStatusProcessing->establishDispatchStatusFilter($resolvedDispatchStatus, $dispatchStatusFilter);
+        
         $claims = $this->claimRepository->getAll(
             $this->claimsPerPage,
             $this->getSkippedItems($page),
@@ -137,12 +142,16 @@ class ClaimService
      * @param $page - страница
      * @param $search - поиск (строка)
      * @param $dispatchStatus - все, отредактированные, для отправки
+     * @param $dispatchStatusFilter - фильтр статуса диспетчера
      * @return array
      */
-    public function search($page, $search, $dispatchStatus)
+    public function search($page, $search, $dispatchStatus, $dispatchStatusFilter)
     {
         $resolvedDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus($dispatchStatus);
-
+        
+        // Использовать фильтр статуса диспетчера
+        $resolvedDispatchStatus = $this->dispatchStatusProcessing->establishDispatchStatusFilter($resolvedDispatchStatus, $dispatchStatusFilter);
+        
         $claims = $this->claimRepository->search(
             $this->claimsPerPage,
             $this->getSkippedItems($page),
