@@ -39,6 +39,7 @@ class ClaimRepository
             ->with('problem')
             ->with('address')
             ->with('comments')
+            ->with('files')
             ->take($take)
             ->skip($skip)
             ->whereIn('dispatch_status', $dispatchStatus)
@@ -115,6 +116,7 @@ class ClaimRepository
             ->with('problem')
             ->with('address')
             ->with('comments')
+            ->with('files')
             ->take($take)
             ->skip($skip)            
             ->whereIn('dispatch_status', $resolvedDispatchStatus)
@@ -150,6 +152,7 @@ class ClaimRepository
             ->with('problem')
             ->with('address')
             ->with('comments')
+            ->with('files')
             ->get();
     }
 
@@ -185,6 +188,7 @@ class ClaimRepository
             ->with('problem')
             ->with('address')
             ->with('comments')
+            ->with('files')
             ->where('status', 'executed')
             ->get();
     }

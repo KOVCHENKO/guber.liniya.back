@@ -17,7 +17,7 @@ class CreateFilesTable extends Migration
             $table->increments('id');
             $table->string('path');
             $table->integer('claim_id')->unsigned();
-            $table->foreign('claim_id')->references('id')->on('organizations');
+            $table->foreign('claim_id')->references('id')->on('claims');
             $table->timestamps();
         });
     }
