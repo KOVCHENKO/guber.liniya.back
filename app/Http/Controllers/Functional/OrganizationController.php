@@ -7,25 +7,30 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Functional\OrganizationRequest;
 use App\src\Repositories\OrganizationRepository;
 use App\src\Services\Organization\OrganizationProblemsControl;
+use App\src\Services\Organization\OrganizationService;
 use Illuminate\Http\Request;
 
 class OrganizationController extends Controller
 {
     protected $organizationRepository;
     protected $organizationProblemsControl;
+    protected $organizationService;
 
     /**
      * OrganizationController constructor.
      * @param OrganizationRepository $organizationRepository
      * @param OrganizationProblemsControl $organizationProblemsControl
+     * @param OrganizationService $organizationService
      */
     public function __construct(
         OrganizationRepository $organizationRepository,
-        OrganizationProblemsControl $organizationProblemsControl
+        OrganizationProblemsControl $organizationProblemsControl,
+        OrganizationService $organizationService
     )
     {
         $this->organizationRepository = $organizationRepository;
         $this->organizationProblemsControl = $organizationProblemsControl;
+        $this->organizationService = $organizationService;
     }
 
     /**
@@ -94,9 +99,9 @@ class OrganizationController extends Controller
      * Получить все зявки, которые пренадлежат данной организации
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
-    public function getClaimsToOrganization($id)
-    {
-        return response($this->organizationRepository->getClaimsToOrganization($id), 200);
+    public function getClaimsToOrganization(Request $request, $id)
+    {        
+        return response($this->organizationService->getClaimsToOrganization($id, $request->dispatchStatusFilter, $request->search), 200);
     }
 
     public function getChildOrganization($organization_id)

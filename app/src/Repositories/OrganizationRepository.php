@@ -131,9 +131,24 @@ class OrganizationRepository
      * @return \Illuminate\Support\Collection
      * Получить заявки организации
      */
-    public function getClaimsToOrganization($organizationId)
+    public function getClaimsToOrganization($organizationId, $dispatchStatusFilter, $search)
     {
-        return $this->getById($organizationId)->claims()->whereNotIn('status', ['rejected'])->orderBy('name')->get();
+        $query = $this->getById($organizationId)->claims()
+            ->with('address')
+            ->whereNotIn('status', ['rejected'])
+            ->whereIn('dispatch_status', $dispatchStatusFilter);
+
+        if ($search != '') {
+            $query->where(function ($query) use ($search) {
+                $query->where('claims.created_at', 'like', '%'.$search.'%')
+                    ->orWhere('claims.firstname', 'like', '%'.$search.'%')
+                    ->orWhere('claims.lastname', 'like', '%'.$search.'%')
+                    ->orWhere('claims.middlename', 'like', '%'.$search.'%')
+                    ->orWhere('claims.phone', 'like', '%'.$search.'%');
+            });
+        }
+
+        return $query->orderBy('name')->get();
     }
 
     /**
