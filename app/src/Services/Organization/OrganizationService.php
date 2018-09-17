@@ -17,16 +17,21 @@ class OrganizationService
         $this->dispatchStatusProcessing = $dispatchStatusProcessing;
     }
 
-    public function getClaimsToOrganization($id, $dispatchStatusFilter, $search)
+    public function getClaimsToOrganization($id, $statusFilter, $search)
     {
         // Фильтр dispatch_status
-        $allDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus('all');
-        $dispatchStatusFilter = $this->dispatchStatusProcessing->establishDispatchStatusFilter($allDispatchStatus, $dispatchStatusFilter);
+        $allStatus = $this->resolveStatus();
+        $statusFilter = $this->dispatchStatusProcessing->establishDispatchStatusFilter($allStatus, $statusFilter);
         
         $organizationIdArray = $this->organizationRepository->getChildrenOrganization($id);
 
-        return $this->organizationRepository->getClaimsToOrganizations($organizationIdArray, $dispatchStatusFilter, $search);
+        return $this->organizationRepository->getClaimsToOrganizations($organizationIdArray, $statusFilter, $search);
         // return $this->organizationRepository->getClaimsToOrganization($id, $dispatchStatusFilter, $search);
+    }
+
+    public function resolveStatus()
+    {
+        return ['created', 'assigned', 'executed', 'rejected'];
     }
 
 }

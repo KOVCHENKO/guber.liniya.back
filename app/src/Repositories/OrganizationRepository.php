@@ -170,7 +170,7 @@ class OrganizationRepository
 
             $query = $item->claims()->with('address')
                 ->whereNotIn('status', ['rejected'])
-                ->whereIn('dispatch_status', $dispatchStatusFilter);
+                ->whereIn('status', $dispatchStatusFilter);
 
             if ($search != '') {
                 $query->where(function ($query) use ($search) {
