@@ -50,6 +50,7 @@ class CallRepository
         return $this->call
             ->take($take)
             ->skip($skip)
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 
