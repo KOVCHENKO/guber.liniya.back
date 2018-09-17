@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Functional;
 
 use App\src\Services\Call\CallService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CallController
 {
@@ -25,6 +26,7 @@ class CallController
      */
     public function receive(Request $request)
     {
+        Log::channel('daily')->info(serialize($request->all()));
         $this->callService->receive($request->all());
     }
 
