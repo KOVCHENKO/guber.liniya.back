@@ -23,8 +23,10 @@ class OrganizationService
         $allDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus('all');
         $dispatchStatusFilter = $this->dispatchStatusProcessing->establishDispatchStatusFilter($allDispatchStatus, $dispatchStatusFilter);
         
-        return $this->organizationRepository->getClaimsToOrganization($id, $dispatchStatusFilter, $search);
+        $organizationIdArray = $this->organizationRepository->getChildrenOrganization($id);
 
+        return $this->organizationRepository->getClaimsToOrganizations($organizationIdArray, $dispatchStatusFilter, $search);
+        // return $this->organizationRepository->getClaimsToOrganization($id, $dispatchStatusFilter, $search);
     }
 
 }

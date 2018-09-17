@@ -5,6 +5,7 @@ namespace App\src\Repositories;
 
 use App\src\Models\Organization;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class OrganizationRepository
 {
@@ -149,6 +150,43 @@ class OrganizationRepository
         }
 
         return $query->orderBy('name')->get();
+    }
+
+    public function getChildrenOrganization($organizationId) 
+    {
+        $organizationsId = DB::select("SELECT GROUP_CONCAT(Level SEPARATOR ',') as idOrg FROM ( SELECT @Ids := ( SELECT GROUP_CONCAT(`ID` SEPARATOR ',') FROM `organizations` WHERE FIND_IN_SET(`pid`, @Ids) ) Level FROM `organizations` JOIN (SELECT @Ids := ?) temp1 ) temp2", [$organizationId]);
+        $arrayOrganizationsId = explode(',', $organizationsId[0]->idOrg);
+        $arrayOrganizationsId[] = $organizationId;
+        return $arrayOrganizationsId;        
+    }
+
+    public function getClaimsToOrganizations($organizationIdArray, $dispatchStatusFilter, $search) 
+    {
+
+        $claims = collect();
+
+        $query = $this->organization->whereIn('id', $organizationIdArray);
+        $query->each(function ($item, $key) use ($claims, $dispatchStatusFilter, $search) {
+
+            $query = $item->claims()->with('address')
+                ->whereNotIn('status', ['rejected'])
+                ->whereIn('dispatch_status', $dispatchStatusFilter);
+
+            if ($search != '') {
+                $query->where(function ($query) use ($search) {
+                    $query->where('claims.created_at', 'like', '%'.$search.'%')
+                        ->orWhere('claims.firstname', 'like', '%'.$search.'%')
+                        ->orWhere('claims.lastname', 'like', '%'.$search.'%')
+                        ->orWhere('claims.middlename', 'like', '%'.$search.'%')
+                        ->orWhere('claims.phone', 'like', '%'.$search.'%');
+                });
+            }
+
+            $claims[] = $query->orderBy('name')->get();
+
+        });
+
+        return $claims->collapse();
     }
 
     /**
