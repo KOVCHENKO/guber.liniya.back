@@ -23,11 +23,11 @@ class CallController
     /**
      * @param Request $request
      * Получить звонок с облачной АТС для внесения в локальную БД
+     * @return mixed
      */
     public function receive(Request $request)
     {
-        Log::channel('daily')->info(serialize($request->all()));
-        $this->callService->receive($request->all());
+        return $this->callService->receive($request->all());
     }
 
     /**
