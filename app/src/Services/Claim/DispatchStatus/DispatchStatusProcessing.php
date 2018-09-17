@@ -52,6 +52,12 @@ class DispatchStatusProcessing
         }
     }
 
+    /**
+     * @param $resolvedDispatchStatus
+     * @param $dispatchStatusFilter
+     * @return array
+     * Если фильтр выставлен на 'all', то пустой фильтр
+     */
     public function establishDispatchStatusFilter($resolvedDispatchStatus, $dispatchStatusFilter)
     {
         if ($dispatchStatusFilter == 'all' || $dispatchStatusFilter == null) {

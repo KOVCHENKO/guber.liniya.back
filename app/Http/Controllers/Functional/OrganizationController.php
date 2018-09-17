@@ -101,7 +101,11 @@ class OrganizationController extends Controller
      */
     public function getClaimsToOrganization(Request $request, $id)
     {        
-        return response($this->organizationService->getClaimsToOrganization($id, $request->dispatchStatusFilter, $request->search), 200);
+        return response($this->organizationService->getClaimsToOrganization(
+            $id,
+            $request->dispatchStatusFilter,
+            $request->search
+        ), 200);
     }
 
     public function getChildOrganization($organization_id)

@@ -42,7 +42,7 @@ class NewClaim implements PIDClaimInterface
                 'middlename' =>  $data['middleName'],
                 'name' => $data['call']['callId'],
                 'description' =>  $data['description'],
-                'link' => $data['link'],
+                'link' => $data['call']['link'],
                 'ats_status' => $data['call']['atsStatus'],
                 'phone' => $data['phone'],
                 'email' =>  $data['email'],

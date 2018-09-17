@@ -152,6 +152,11 @@ class OrganizationRepository
         return $query->orderBy('name')->get();
     }
 
+    /**
+     * @param $organizationId
+     * @return array
+     * Получить дочерние заявки организаций
+     */
     public function getChildrenOrganization($organizationId) 
     {
         $organizationsId = DB::select("SELECT GROUP_CONCAT(Level SEPARATOR ',') as idOrg FROM ( SELECT @Ids := ( SELECT GROUP_CONCAT(`ID` SEPARATOR ',') FROM `organizations` WHERE FIND_IN_SET(`pid`, @Ids) ) Level FROM `organizations` JOIN (SELECT @Ids := ?) temp1 ) temp2", [$organizationId]);
