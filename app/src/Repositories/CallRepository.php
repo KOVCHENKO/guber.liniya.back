@@ -32,7 +32,7 @@ class CallRepository
         $newCall->phone = $call['phone'];
         $newCall->ext = $call['ext'];
         $newCall->type = $call['type'];
-        $newCall->processing_status = $call['raw'];
+        $newCall->processing_status = 'raw';
 
         $newCall->save();
 
@@ -50,6 +50,7 @@ class CallRepository
         return $this->call
             ->take($take)
             ->skip($skip)
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 
