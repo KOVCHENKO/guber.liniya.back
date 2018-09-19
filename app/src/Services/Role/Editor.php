@@ -12,7 +12,8 @@ class Editor implements RoleTypeInterface
     public function getCabinets()
     {
         return [
-            new Cabinet(1, 'Заявки', 'dispatcher_applications', '/dispatcher_applications/prepared'),
+            new Cabinet(1, 'Звонки', 'calls', '/calls'),
+            new Cabinet(2, 'Заявки', 'dispatcher_applications', '/dispatcher_applications/prepared'),
         ];
     }
 }

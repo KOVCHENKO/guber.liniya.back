@@ -25,7 +25,11 @@ class OrganizationService
         
         $organizationIdArray = $this->organizationRepository->getChildrenOrganization($id);
 
-        return $this->organizationRepository->getClaimsToOrganizations($organizationIdArray, $statusFilter, $search);
+        return $this->organizationRepository->getClaimsToOrganizations(
+            $organizationIdArray,
+            $statusFilter,
+            $search
+        );
     }
 
     public function resolveStatus()

@@ -159,7 +159,11 @@ class OrganizationRepository
      */
     public function getChildrenOrganization($organizationId) 
     {
-        $organizationsId = DB::select("SELECT GROUP_CONCAT(Level SEPARATOR ',') as idOrg FROM ( SELECT @Ids := ( SELECT GROUP_CONCAT(`ID` SEPARATOR ',') FROM `organizations` WHERE FIND_IN_SET(`pid`, @Ids) ) Level FROM `organizations` JOIN (SELECT @Ids := ?) temp1 ) temp2", [$organizationId]);
+        $organizationsId = DB::select(
+            "SELECT GROUP_CONCAT(Level SEPARATOR ',') as idOrg FROM 
+                    ( SELECT @Ids := ( SELECT GROUP_CONCAT(`ID` SEPARATOR ',') FROM
+                     `organizations` WHERE FIND_IN_SET(`pid`, @Ids) ) Level FROM 
+                     `organizations` JOIN (SELECT @Ids := ?) temp1 ) temp2", [$organizationId]);
         $arrayOrganizationsId = explode(',', $organizationsId[0]->idOrg);
         $arrayOrganizationsId[] = $organizationId;
         return $arrayOrganizationsId;        
@@ -170,12 +174,17 @@ class OrganizationRepository
 
         $claims = collect();
 
-        $query = $this->organization->whereIn('id', $organizationIdArray);
-        $query->each(function ($item, $key) use ($claims, $dispatchStatusFilter, $search) {
+        $query = $this->organization->whereIn('id', $organizationIdArray); // query - returns Builder
 
-            $query = $item->claims()->with('address')
+        $query->each(function ($item) use ($claims, $dispatchStatusFilter, $search) {
+
+            $query = $item->claims()        // Берет заявки всех организаций
+                ->join('claims_organizations as co', 'claims.id', '=', 'co.claim_id')
+                ->with('address')
                 ->whereNotIn('status', ['rejected'])
-                ->whereIn('status', $dispatchStatusFilter);
+                ->whereIn('status', $dispatchStatusFilter)
+                ->where('co.visibility', '=', 'show');
+
 
             if ($search != '') {
                 $query->where(function ($query) use ($search) {
@@ -187,7 +196,9 @@ class OrganizationRepository
                 });
             }
 
-            $claims[] = $query->orderBy('name')->get();
+            $claims[] = $query
+                ->orderBy('claims.name')
+                ->get();
 
         });
 
