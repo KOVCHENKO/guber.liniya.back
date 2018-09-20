@@ -32,7 +32,15 @@ class ClaimController extends Controller
      */
     public function getAll(Request $request, $page, $dispatchStatus)
     {   
-        return response($this->claimService->getAll($page, $dispatchStatus, $request->dispatchStatusFilter), 200);
+        return response($this->claimService->getAll(
+            $page,
+            $dispatchStatus,
+            $request->dispatchStatusFilter,
+            $request->statusFilter,
+            $request->closeStatusFilter,
+            $request->sortBy,
+            $request->sortDirection
+        ), 200);
     }
 
     /**
@@ -56,7 +64,16 @@ class ClaimController extends Controller
      */
     public function search(Request $request)
     {
-        return response($this->claimService->search($request->page, $request->search, $request->dispatchStatus, $request->dispatchStatusFilter), 200);
+        return response($this->claimService->search(
+            $request->page,
+            $request->search,
+            $request->dispatchStatus,
+            $request->dispatchStatusFilter,
+            $request->statusFilter,
+            $request->closeStatusFilter,
+            $request->sortBy,
+            $request->sortDirection
+        ), 200);
     }
 
     /**
@@ -78,14 +95,6 @@ class ClaimController extends Controller
     public function getPreviousByPhone(Request $request)
     {
         return response($this->claimService->getPreviousByPhone($request->phone), 200);
-    }
-
-    /**
-     * Получить заявки со статусом выполнено
-     */
-    public function getExecutedClaims()
-    {
-        return response($this->claimService->getExecutedClaims(), 200);
     }
 
     /**

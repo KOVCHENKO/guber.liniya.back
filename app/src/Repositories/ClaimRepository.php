@@ -30,10 +30,12 @@ class ClaimRepository
      * @param $take - кол-во получаемых элементов
      * @param $skip - оффсет, пропустить элементы
      * @param $dispatchStatus - prepared, edited, dispatched, null
+     * @param $status - created, assigned, executed, rejected
+     * @param $closeStatus - not_executed, executed_partially, executed_totally
      * @return Claim[]|\Illuminate\Database\Eloquent\Collection
      * Получить все заявки
      */
-    public function getAll($take, $skip, $dispatchStatus)
+    public function getAll($take, $skip, $dispatchStatus, $status, $closeStatus, $sortBy, $sortDirection)
     {
         return $this->claim
             ->with('problem')
@@ -42,7 +44,10 @@ class ClaimRepository
             ->with('files')
             ->take($take)
             ->skip($skip)
+            ->whereIn('close_status', $closeStatus)
             ->whereIn('dispatch_status', $dispatchStatus)
+            ->whereIn('status', $status)
+            ->orderBy($sortBy, $sortDirection)
             ->get();
     }
 
@@ -110,7 +115,7 @@ class ClaimRepository
             ->count();
     }
 
-    public function search($take, $skip, $search, $resolvedDispatchStatus)
+    public function search($take, $skip, $search, $resolvedDispatchStatus, $status, $closeStatus,  $sortBy, $sortDirection)
     {
         return $this->claim
             ->with('problem')
@@ -118,8 +123,10 @@ class ClaimRepository
             ->with('comments')
             ->with('files')
             ->take($take)
-            ->skip($skip)            
+            ->skip($skip)
             ->whereIn('dispatch_status', $resolvedDispatchStatus)
+            ->whereIn('status', $status)
+            ->whereIn('close_status', $closeStatus)
             ->where(function ($query) use ($search) {
                 $query->where('created_at', 'like', '%'.$search.'%')
                     ->orWhere('firstname', 'like', '%'.$search.'%')
@@ -127,6 +134,7 @@ class ClaimRepository
                     ->orWhere('middlename', 'like', '%'.$search.'%')
                     ->orWhere('phone', 'like', '%'.$search.'%');
             })
+            ->orderBy($sortBy, $sortDirection)
             ->get();
     }
 
@@ -176,21 +184,6 @@ class ClaimRepository
     public function getParentClaim($pid)
     {
         return $this->claim->find($pid);
-    }
-
-    /**
-     * @return mixed
-     * Получить заявки со статусом выполнено
-     */
-    public function getExecutedClaims(): Collection
-    {
-        return $this->claim
-            ->with('problem')
-            ->with('address')
-            ->with('comments')
-            ->with('files')
-            ->where('status', 'executed')
-            ->get();
     }
 
     /**

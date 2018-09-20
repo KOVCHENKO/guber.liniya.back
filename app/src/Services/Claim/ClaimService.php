@@ -97,20 +97,32 @@ class ClaimService
      * @param $page - получить согласно странице
      * Пока что по 10 записей на страницу (default)
      * @param $dispatchStatus - все, отредактированные, для отправки
-     * @param $dispatchStatusFilter - фильтр статуса диспетчера
+     * @param $dispatchStatusFilter - фильтр статуса диспетчера и приемки заявки
+     * @param $statusFilter - фильтр статуса обработки
+     * @param $closeStatusFilter - фильтр статуса закрытия
      * @return Claim[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getAll($page, $dispatchStatus, $dispatchStatusFilter)
+    public function getAll($page, $dispatchStatus, $dispatchStatusFilter, $statusFilter, $closeStatusFilter, $sortBy, $sortDirection)
     {
         $resolvedDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus($dispatchStatus);
-        
+
         // Использовать фильтр статуса диспетчера
         $resolvedDispatchStatus = $this->dispatchStatusProcessing->establishDispatchStatusFilter($resolvedDispatchStatus, $dispatchStatusFilter);
-        
+
+        // Фильтр по статусу обработки
+        $resolvedStatusFilter = $this->dispatchStatusProcessing->establishStatusFilter($statusFilter);
+
+        // Фильтр по статусу заврешения
+        $resolveCloseStatusFilter = $this->dispatchStatusProcessing->establishCloseStatusFilter($closeStatusFilter);
+
         $claims = $this->claimRepository->getAll(
             $this->claimsPerPage,
             $this->getSkippedItems($page),
-            $resolvedDispatchStatus
+            $resolvedDispatchStatus,
+            $resolvedStatusFilter,
+            $resolveCloseStatusFilter,
+            $sortBy,
+            $sortDirection
         );
 
         // Получить родительские заявки
@@ -145,18 +157,29 @@ class ClaimService
      * @param $dispatchStatusFilter - фильтр статуса диспетчера
      * @return array
      */
-    public function search($page, $search, $dispatchStatus, $dispatchStatusFilter)
+    public function search($page, $search, $dispatchStatus, $dispatchStatusFilter, $statusFilter, $closeStatusFilter, $sortBy, $sortDirection)
     {
         $resolvedDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus($dispatchStatus);
         
         // Использовать фильтр статуса диспетчера
         $resolvedDispatchStatus = $this->dispatchStatusProcessing->establishDispatchStatusFilter($resolvedDispatchStatus, $dispatchStatusFilter);
-        
+
+        // Фильтр по статусу обработки
+        $resolvedStatusFilter = $this->dispatchStatusProcessing->establishStatusFilter($statusFilter);
+
+        // Фильтр по статусу заврешения
+        $resolveCloseStatusFilter = $this->dispatchStatusProcessing->establishCloseStatusFilter($closeStatusFilter);
+
         $claims = $this->claimRepository->search(
             $this->claimsPerPage,
             $this->getSkippedItems($page),
             $search,
-            $resolvedDispatchStatus);
+            $resolvedDispatchStatus,
+            $resolvedStatusFilter,
+            $resolveCloseStatusFilter,
+            $sortBy,
+            $sortDirection
+        );
 
         // Получить родительские заявки
         $claims->map(function ($claim) {
@@ -191,14 +214,6 @@ class ClaimService
         return $this->claimRepository->getByPhone($phone);
     }
 
-    /**
-     * @return mixed
-     * Получить заявки со статусом выполнено
-     */
-    public function getExecutedClaims(): Collection
-    {
-        return $this->claimRepository->getExecutedClaims();
-    }
 
     /**
      * @param $claimId - id заявки

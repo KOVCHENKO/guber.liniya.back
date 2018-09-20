@@ -6,6 +6,11 @@ namespace App\src\Services\Claim\DispatchStatus;
 use App\src\Repositories\OrganizationRepository;
 use Exception;
 
+/**
+ * Class DispatchStatusProcessing
+ * @package App\src\Services\Claim\DispatchStatus
+ * Фильтрация заявок по разным параметрам
+ */
 class DispatchStatusProcessing
 {
     protected $organizationRepository;
@@ -64,6 +69,34 @@ class DispatchStatusProcessing
             return $resolvedDispatchStatus;
         }
         return [$dispatchStatusFilter];
+    }
+
+    /**
+     * @param $statusFilter
+     * @return array
+     * Фильтр на статус обработки - все или никакие фильтры
+     */
+    public function establishStatusFilter($statusFilter)
+    {
+        if ($statusFilter == 'all' || $statusFilter == null) {
+            return [NULL, 'created', 'assigned', 'executed', 'rejected'];
+        }
+
+        return [$statusFilter];
+    }
+
+    /**
+     * @param $closeStatusFilter
+     * Фильтр по закрытию (завершению) заявки
+     * @return mixed
+     */
+    public function establishCloseStatusFilter($closeStatusFilter)
+    {
+        if ($closeStatusFilter == 'all' || $closeStatusFilter == null) {
+            return ['raw', 'not_executed', 'executed_partially', 'executed_totally'];
+        }
+
+        return [$closeStatusFilter];
     }
 
 }
