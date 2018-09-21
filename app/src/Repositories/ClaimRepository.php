@@ -42,6 +42,7 @@ class ClaimRepository
             ->with('address')
             ->with('comments')
             ->with('files')
+            ->with('responsibleOrganization')
             ->take($take)
             ->skip($skip)
             ->whereIn('close_status', $closeStatus)
@@ -95,7 +96,7 @@ class ClaimRepository
 
     public function reassignClaimToResponsibleOrganization(Claim $claim, $organizationId)
     {
-        $claim->organizations()->attach($organizationId);
+        $claim->organizations()->attach($organizationId, ['visibility' => 'show']);
     }
 
     /**
@@ -122,14 +123,14 @@ class ClaimRepository
             ->with('address')
             ->with('comments')
             ->with('files')
+            ->with('responsibleOrganization')
             ->take($take)
             ->skip($skip)
             ->whereIn('dispatch_status', $resolvedDispatchStatus)
             ->whereIn('status', $status)
             ->whereIn('close_status', $closeStatus)
             ->where(function ($query) use ($search) {
-                $query->where('created_at', 'like', '%'.$search.'%')
-                    ->orWhere('firstname', 'like', '%'.$search.'%')
+                $query->where('firstname', 'like', '%'.$search.'%')
                     ->orWhere('lastname', 'like', '%'.$search.'%')
                     ->orWhere('middlename', 'like', '%'.$search.'%')
                     ->orWhere('phone', 'like', '%'.$search.'%');

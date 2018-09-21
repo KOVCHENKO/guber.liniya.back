@@ -27,6 +27,16 @@ class Claim extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * Ответственная организация
+     */
+    public function responsibleOrganization()
+    {
+        return $this->belongsToMany(Organization::class,
+            'claims_organizations');
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      * Проблема, привязанная к заявке
      */

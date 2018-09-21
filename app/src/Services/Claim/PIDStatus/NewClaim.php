@@ -51,7 +51,8 @@ class NewClaim implements PIDClaimInterface
                 'problem_id' => $data['problem']['id'],
                 'level' => $data['level'],
                 'status' => 'created',
-                'dispatch_status' => 'prepared'
+                'dispatch_status' => $data['dispatchStatus'],
+                'close_status' => 'raw'
             ]);
 
             $this->claimRepository->assignClaimToResponsibleOrganization($newClaim, $organization->id, 'hide');
