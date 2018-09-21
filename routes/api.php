@@ -78,7 +78,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
 Route::post('/calls/get_call', 'Functional\CallController@receive');
 
-Route::get('/claims/export', 'Analytics\ClaimExportController@export');
+Route::post('/analytics/calls_report', 'Analytics\ClaimExportController@export');
 
 Route::post('/file/upload/{claim_id}', 'Util\UploadController@uploadSingleFile');
 Route::get('/file/download', 'Util\UploadController@downloadFile');
