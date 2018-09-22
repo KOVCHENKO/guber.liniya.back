@@ -1,10 +1,11 @@
 <?php
 
+use App\src\Models\Claim;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-
-//Route::get('claims/all/{page}/{dispatch_status}', 'Functional\ClaimController@getAll');
-
 
 Route::post('/register', 'Auth\LoginController@register');
 
@@ -78,7 +79,39 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
 Route::post('/calls/get_call', 'Functional\CallController@receive');
 
-Route::post('/analytics/calls_report', 'Analytics\ClaimExportController@export');
+Route::get('/analytics/calls_report/{report_type}/{from}/{to}', 'Analytics\AnalyticsController@callsReport');
+Route::get('/analytics/claims_register_report/{report_type}/{from}/{to}', 'Analytics\AnalyticsController@claimsRegisterReport');
+
+
 
 Route::post('/file/upload/{claim_id}', 'Util\UploadController@uploadSingleFile');
 Route::get('/file/download', 'Util\UploadController@downloadFile');
+
+
+
+Route::get('/wanna_calls', function() {
+    $start = Carbon::now()->startOfMonth();
+    $finish = Carbon::now()->endOfMonth();
+
+    $claims = Claim::with('problem')
+        ->with('responsibleOrganization')
+        ->whereBetween('created_at', [$start, $finish])
+        ->get();
+
+    return $claims->map(function ($claim) {
+
+        if ($claim->responsibleOrganization->isEmpty()) {
+            $claim->responsibleOrganization = array([
+                'name' => 'Отсутствует'
+            ]);
+        }
+
+        return [
+            'created_at' => $claim->created_at,
+            'lastname' => $claim->lastname.' '.$claim->firstname.' '.$claim->middlename,
+            'problem' => $claim->problem->name,
+            'organization' => $claim->responsibleOrganization[0]['name'],
+            'status' => $claim->status
+        ];
+    });
+});
