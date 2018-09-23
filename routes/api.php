@@ -81,6 +81,10 @@ Route::post('/calls/get_call', 'Functional\CallController@receive');
 
 Route::get('/analytics/calls_report/{report_type}/{from}/{to}', 'Analytics\AnalyticsController@callsReport');
 Route::get('/analytics/claims_register_report/{report_type}/{from}/{to}', 'Analytics\AnalyticsController@claimsRegisterReport');
+Route::get(
+    '/analytics/claims_statistics_report/{report_type}/{from}/{to}/{chosen_district}/{chosen_organization}/{chosen_problem}/{status_filter}',
+    'Analytics\AnalyticsController@claimsStatisticsReport'
+);
 
 
 

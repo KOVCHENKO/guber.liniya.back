@@ -4,9 +4,9 @@ namespace App\src\Exports\ClaimRegister;
 
 
 use App\src\Models\Claim;
+use App\src\Services\Util\TranslationService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
@@ -54,7 +54,7 @@ class ClaimsForYear implements FromCollection, WithHeadings
                 'lastname' => $claim->lastname.' '.$claim->firstname.' '.$claim->middlename,
                 'problem' => $claim->problem->name,
                 'organization' => $claim->responsibleOrganization[0]['name'],
-                'status' => $claim->status
+                'status' => TranslationService::translateClaimStatus($claim->status)
             ];
         });
     }
