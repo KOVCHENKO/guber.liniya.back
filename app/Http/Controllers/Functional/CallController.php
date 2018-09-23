@@ -40,6 +40,10 @@ class CallController
         return $this->callService->all($page);
     }
 
+    /**
+     * @param $callId
+     * @return
+     */
     public function markCallAsFaulty($callId)
     {
         return $this->callService->markCallAsFaulty($callId);

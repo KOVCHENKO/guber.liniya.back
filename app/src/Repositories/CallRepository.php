@@ -62,7 +62,8 @@ class CallRepository
     /**
      * @param $call
      * Обновить информацию о звонке
-     * @return возвращает обновленный звонок
+     * @return
+     * возвращает обновленный звонок
      */
     public function update($call)
     {

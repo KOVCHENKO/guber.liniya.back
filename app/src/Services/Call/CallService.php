@@ -36,12 +36,11 @@ class CallService
      */
     public function receive($call)
     {
-        if ($call['cmd'] == 'history') {
+        if ($call['cmd'] == 'history' && $call['type'] == 'in') {
             return $this->makeCall($call);
         }
 
         Log::channel('daily')->info(serialize($call));
-
     }
 
     /**
@@ -98,6 +97,7 @@ class CallService
     /**
      * @param $callId
      * Пометить звонок как ошибочный
+     * @return
      */
     public function markCallAsFaulty($callId)
     {
@@ -105,7 +105,7 @@ class CallService
         $callToUpdate['id'] = $callId;
         $callToUpdate['processingStatus'] = 'failed';
 
-        $this->callRepository->update($callToUpdate);
+        return $this->callRepository->update($callToUpdate);
     }
 
 

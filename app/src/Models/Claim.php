@@ -12,13 +12,13 @@ class Claim extends Model
     protected $fillable = [
         'name', 'description',
         'firstname', 'middlename', 'lastname', 'phone', 'email', 'address_id',
-        'link', 'ats_status', 'problem_id',
+        'link', 'ats_status', 'problem_id', 'call_id',
         'status', 'dispatch_status', 'pid', 'close_status', 'level'
     ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     * Организации привязанные к заявке
+     * Организации привязанные к заявaке
      */
     public function organizations()
     {
