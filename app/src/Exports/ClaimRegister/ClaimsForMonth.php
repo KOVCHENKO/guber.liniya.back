@@ -40,6 +40,7 @@ class ClaimsForMonth implements FromCollection, WithHeadings
         $claims = Claim::with('problem')
             ->with('responsibleOrganization')
             ->whereBetween('created_at', [$start, $finish])
+            ->orderBy('created_at', 'asc')
             ->get();
         
         return $claims->map(function ($claim) {

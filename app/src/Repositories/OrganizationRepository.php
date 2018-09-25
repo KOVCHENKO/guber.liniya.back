@@ -187,8 +187,7 @@ class OrganizationRepository
 
             if ($search != '') {
                 $query->where(function ($query) use ($search) {
-                    $query->where('claims.created_at', 'like', '%'.$search.'%')
-                        ->orWhere('claims.firstname', 'like', '%'.$search.'%')
+                    $query->where('claims.firstname', 'like', '%'.$search.'%')
                         ->orWhere('claims.lastname', 'like', '%'.$search.'%')
                         ->orWhere('claims.middlename', 'like', '%'.$search.'%')
                         ->orWhere('claims.phone', 'like', '%'.$search.'%');
