@@ -33,7 +33,7 @@ class CallRepository
         $newCall->ext = $call['ext'];
         $newCall->type = $call['type'];
         $newCall->processing_status = 'raw';
-        $newCall->created_at = $call['start'];
+//        $newCall->created_at = $call['start'];
 
         $newCall->save();
 

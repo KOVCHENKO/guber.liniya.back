@@ -36,11 +36,11 @@ class CallService
      */
     public function receive($call)
     {
+        Log::channel('daily')->info(serialize($call));
+
         if ($call['cmd'] == 'history' && $call['type'] == 'in') {
             return $this->makeCall($call);
         }
-
-        Log::channel('daily')->info(serialize($call));
     }
 
     /**
