@@ -8,6 +8,15 @@ use Illuminate\Support\Facades\DB;
 class EditClaimsStatusTable extends Migration
 {
     /**
+     * EditClaimsTableMakeEmailNullable constructor.
+     * Возможность оставить тип enum в БД
+     */
+    public function __construct()
+    {
+        DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+    }
+    
+    /**
      * Run the migrations.
      *
      * @return void
