@@ -21,7 +21,7 @@ Route::get('/get_cabinets/{user_id}', 'Common\DesktopController@getCabinets');
 Route::group(['middleware' => 'jwt.auth'], function () {
 
     Route::prefix('/organizations/')->namespace('Functional')->group(function(){
-        Route::get('all', 'OrganizationController@getAll')->middleware('role:admin,dispatcher,editor,supervisor');
+        Route::get('all', 'OrganizationController@getAll')->middleware('role:admin,dispatcher,editor,supervisor,analyst');
         Route::post('create', 'OrganizationController@create')->middleware('role:admin');
         Route::post('update/{id}', 'OrganizationController@update')->middleware('role:admin');
         Route::get('get_by_id/{id}', 'OrganizationController@getById')->middleware('role:admin');
@@ -42,7 +42,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         Route::get('delete/{problem_type_id}', 'ProblemTypeController@delete');
     });
     Route::get('/problem_types/all', 'Functional\ProblemTypeController@getAll')
-        ->middleware('role:admin,dispatcher,editor,supervisor');
+        ->middleware('role:admin,dispatcher,editor,supervisor,analyst');
 
 
     Route::prefix('/claims/')->namespace('Functional')->group(function(){
@@ -90,32 +90,3 @@ Route::get(
 
 Route::post('/file/upload/{claim_id}', 'Util\UploadController@uploadSingleFile');
 Route::get('/file/download', 'Util\UploadController@downloadFile');
-
-
-
-Route::get('/wanna_calls', function() {
-    $start = Carbon::now()->startOfMonth();
-    $finish = Carbon::now()->endOfMonth();
-
-    $claims = Claim::with('problem')
-        ->with('responsibleOrganization')
-        ->whereBetween('created_at', [$start, $finish])
-        ->get();
-
-    return $claims->map(function ($claim) {
-
-        if ($claim->responsibleOrganization->isEmpty()) {
-            $claim->responsibleOrganization = array([
-                'name' => 'Отсутствует'
-            ]);
-        }
-
-        return [
-            'created_at' => $claim->created_at,
-            'lastname' => $claim->lastname.' '.$claim->firstname.' '.$claim->middlename,
-            'problem' => $claim->problem->name,
-            'organization' => $claim->responsibleOrganization[0]['name'],
-            'status' => $claim->status
-        ];
-    });
-});

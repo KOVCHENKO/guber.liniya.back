@@ -31,6 +31,7 @@ class OrganizationRequest extends FormRequest
         ];
     }
 
+
     /**
      * @param Validator $validator
      * Возвращает информацию в json виде при валидационной ошибке
@@ -43,4 +44,6 @@ class OrganizationRequest extends FormRequest
                 'status' => 'fail']
             , 422));
     }
+
+
 }

@@ -15,7 +15,7 @@ class EditClaimsStatusTable extends Migration
     {
         DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
     }
-    
+
     /**
      * Run the migrations.
      *
