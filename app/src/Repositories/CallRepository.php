@@ -56,6 +56,10 @@ class CallRepository
             ->get();
     }
 
+    /**
+     * @return mixed
+     * Получить кол-во страниц всего
+     */
     public function getPagesCount()
     {
         return $this->call->count();
@@ -109,6 +113,32 @@ class CallRepository
             ->orderBy('created_at', 'desc')
             ->whereBetween('created_at', [$start, $finish])
             ->get();
+    }
+
+    /**
+     * @param string $day
+     * @return mixed
+     * Получить кол-во страниц по дням для звонков
+     */
+    public function getPagesCountPerDay(string $day)
+    {
+        return $this->call
+            ->where('created_at', 'like', '%'.$day.'%')
+            ->count();
+    }
+
+
+    /**
+     * @param $start
+     * @param $finish
+     * @return mixed
+     * Получить кол-во страниц за определенный период
+     */
+    public function getPagesCountPerPeriod($start, $finish)
+    {
+        return $this->call
+            ->whereBetween('created_at', [$start, $finish])
+            ->count();
     }
 
 

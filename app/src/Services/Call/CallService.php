@@ -82,9 +82,11 @@ class CallService
             $dateFilterOptions
         );
 
+        $pages = $this->pagesCount($dateFilterOptions);
+
         return [
             'calls' => $calls,
-            'pages' => ceil($this->callRepository->getPagesCount() / $this->paginator->itemsPerPage)
+            'pages' => $pages
         ];
 
     }
@@ -141,6 +143,36 @@ class CallService
                     $skip,
                     $filterOptions['from'],
                     $filterOptions['to']);
+                break;
+        }
+
+        return new Exception('date filter option has not been defined');
+    }
+
+    /**
+     * @param $filterOptions
+     * @return Exception|float|mixed
+     * Получить кол-во страниц за определенный период
+     */
+    private function pagesCount($filterOptions)
+    {
+        switch ($filterOptions['dateFilter']) {
+            case 'all':
+                return ceil($this->callRepository->getPagesCount() / $this->paginator->itemsPerPage);
+                break;
+            case 'day':
+                $day = Carbon::now()->format('Y-m-d');
+                return ceil($this->callRepository->getPagesCountPerDay($day) / $this->paginator->itemsPerPage);
+                break;
+            case 'week':
+                $start = Carbon::now()->startOfWeek();
+                $finish = Carbon::now()->endOfWeek();
+                return ceil($this->callRepository->getPagesCountPerPeriod($start, $finish) / $this->paginator->itemsPerPage);
+                break;
+            case 'period':
+                $start = $filterOptions['from'];
+                $finish = $filterOptions['to'];
+                return ceil($this->callRepository->getPagesCountPerPeriod($start, $finish) / $this->paginator->itemsPerPage);
                 break;
         }
 
