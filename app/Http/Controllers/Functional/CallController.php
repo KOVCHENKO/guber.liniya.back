@@ -32,12 +32,13 @@ class CallController
 
     /**
      * Получтиь все звонки из БД
+     * @param Request $request - dateFilter (day, week, period), from, to
      * @param $page
      * @return \App\src\Models\Call[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getAll($page)
+    public function getAll(Request $request, $page)
     {
-        return $this->callService->all($page);
+        return $this->callService->all($page, $request->all());
     }
 
     /**

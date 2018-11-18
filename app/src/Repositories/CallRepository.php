@@ -4,6 +4,7 @@ namespace App\src\Repositories;
 
 
 use App\src\Models\Call;
+use Illuminate\Support\Collection;
 
 class CallRepository
 {
@@ -74,4 +75,41 @@ class CallRepository
 
         return $callToUpdate;
     }
+
+    /**
+     * Получить все звонки за день
+     * @param $take
+     * @param $skip
+     * @param $day
+     * @return Collection
+     */
+    public function getAllForDay($take, $skip, $day): Collection
+    {
+        return $this->call
+            ->take($take)
+            ->skip($skip)
+            ->orderBy('created_at', 'desc')
+            ->where('created_at', 'like', '%'.$day.'%')
+            ->get();
+    }
+
+    /**
+     * @param $take
+     * @param $skip
+     * @param $start - начало
+     * @param $finish - конец
+     * Получить все звонки за определенный период
+     * @return Collection - коллекция звонков
+     */
+    public function getAllForPeriod($take, $skip, $start, $finish): Collection
+    {
+        return $this->call
+            ->take($take)
+            ->skip($skip)
+            ->orderBy('created_at', 'desc')
+            ->whereBetween('created_at', [$start, $finish])
+            ->get();
+    }
+
+
 }

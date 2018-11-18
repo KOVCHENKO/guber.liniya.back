@@ -6,6 +6,8 @@ namespace App\src\Services\Call;
 use App\src\Models\Call;
 use App\src\Repositories\CallRepository;
 use App\src\Services\Util\Pagination;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -67,14 +69,17 @@ class CallService
 
 
     /**
+     * @param $page
+     * @param $dateFilterOptions
      * @return \App\src\Models\Call[]|\Illuminate\Database\Eloquent\Collection
      * Получить все звонки из АТС
      */
-    public function all($page)
+    public function all($page, $dateFilterOptions)
     {
-        $calls = $this->callRepository->getAll(
+        $calls = $this->filterAndGet(
             $this->paginator->itemsPerPage,
-            $this->paginator->getSkippedItems($page)
+            $this->paginator->getSkippedItems($page),
+            $dateFilterOptions
         );
 
         return [
@@ -106,6 +111,40 @@ class CallService
         $callToUpdate['processingStatus'] = 'failed';
 
         return $this->callRepository->update($callToUpdate);
+    }
+
+    /**
+     * @param $take
+     * @param $skip
+     * @param $filterOptions
+     * @return mixed
+     * Фильтрация по датам
+     */
+    public function filterAndGet($take, $skip, $filterOptions)
+    {
+        switch ($filterOptions['dateFilter']) {
+            case 'all':
+                return $this->callRepository->getAll($take, $skip);
+                break;
+            case 'day':
+                $day = Carbon::now()->format('Y-m-d');
+                return $this->callRepository->getAllForDay($take, $skip, $day);
+                break;
+            case 'week':
+                $start = Carbon::now()->startOfWeek();
+                $finish = Carbon::now()->endOfWeek();
+                return $this->callRepository->getAllForPeriod($take, $skip, $start, $finish);
+                break;
+            case 'period':
+                return $this->callRepository->getAllForPeriod(
+                    $take,
+                    $skip,
+                    $filterOptions['from'],
+                    $filterOptions['to']);
+                break;
+        }
+
+        return new Exception('date filter option has not been defined');
     }
 
 

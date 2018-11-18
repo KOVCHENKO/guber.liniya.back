@@ -71,7 +71,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::post('/comments/create', 'Functional\CommentController@create')->middleware('role:specialist');
 
     Route::prefix('/calls')->namespace('Functional')->middleware('role:dispatcher,editor,supervisor')->group(function() {
-        Route::get('/all/{page}', 'CallController@getAll');
+        Route::post('/all/{page}', 'CallController@getAll');
         Route::get('/mark_call_as_faulty/{call_id}', 'CallController@markCallAsFaulty');
     });
 
