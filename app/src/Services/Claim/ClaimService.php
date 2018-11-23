@@ -137,7 +137,9 @@ class ClaimService
 
         return [
             'claims' => $claims,
-            'pages' => ceil($this->claimRepository->getPagesCount($resolvedDispatchStatus) / $this->claimsPerPage)
+            'pages' => ceil(
+                $this->claimRepository->getPagesCount($resolvedDispatchStatus, $resolveCloseStatusFilter, $resolvedStatusFilter)
+                / $this->claimsPerPage)
         ];
     }
 
@@ -160,7 +162,7 @@ class ClaimService
     public function search($page, $search, $dispatchStatus, $dispatchStatusFilter, $statusFilter, $closeStatusFilter, $sortBy, $sortDirection)
     {
         $resolvedDispatchStatus = $this->dispatchStatusProcessing->resolveDispatchStatus($dispatchStatus);
-        
+
         // Использовать фильтр статуса диспетчера
         $resolvedDispatchStatus = $this->dispatchStatusProcessing->establishDispatchStatusFilter($resolvedDispatchStatus, $dispatchStatusFilter);
 
@@ -193,7 +195,9 @@ class ClaimService
 
         return [
             'claims' => $claims,
-            'pages' => ceil($this->claimRepository->getPagesCount($resolvedDispatchStatus) / $this->claimsPerPage)
+            'pages' => ceil(
+                $this->claimRepository->getPagesCountForSearch($resolvedDispatchStatus, $resolveCloseStatusFilter, $resolvedStatusFilter, $search)
+                / $this->claimsPerPage)
         ];
     }
 
@@ -258,7 +262,7 @@ class ClaimService
 
         // Изменить статус на вновь созданную
         $this->claimRepository->changeStatus($claim, 'created');
-        
+
         return $claim;
     }
 

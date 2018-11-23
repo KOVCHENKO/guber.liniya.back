@@ -109,12 +109,45 @@ class ClaimRepository
         $claim->organizations()->detach($organizationId);
     }
 
-    public function getPagesCount($resolvedDispatchStatus)
+    /**
+     * @param $resolvedDispatchStatus
+     * @param $resolvedCloseStatus
+     * @param $resolvedStatus
+     * @param $search
+     * @return mixed
+     * Получить кол-во страниц
+     */
+    public function getPagesCount($resolvedDispatchStatus, $resolvedCloseStatus, $resolvedStatus)
     {
         return $this->claim
             ->whereIn('dispatch_status', $resolvedDispatchStatus)
+            ->whereIn('close_status', $resolvedCloseStatus)
+            ->whereIn('status', $resolvedStatus)
             ->count();
     }
+
+    /**
+     * @param $resolvedDispatchStatus
+     * @param $resolvedCloseStatus
+     * @param $resolvedStatus
+     * @return mixed
+     * Получить кол-во страниц для поиска
+     */
+    public function getPagesCountForSearch($resolvedDispatchStatus, $resolvedCloseStatus, $resolvedStatus, $search)
+    {
+        return $this->claim
+            ->whereIn('dispatch_status', $resolvedDispatchStatus)
+            ->whereIn('close_status', $resolvedCloseStatus)
+            ->whereIn('status', $resolvedStatus)
+            ->where(function ($query) use ($search) {
+                $query->where('firstname', 'like', '%'.$search.'%')
+                    ->orWhere('lastname', 'like', '%'.$search.'%')
+                    ->orWhere('middlename', 'like', '%'.$search.'%')
+                    ->orWhere('phone', 'like', '%'.$search.'%');
+            })
+            ->count();
+    }
+
 
     public function search($take, $skip, $search, $resolvedDispatchStatus, $status, $closeStatus,  $sortBy, $sortDirection)
     {
