@@ -47,7 +47,7 @@ class ClaimsStatisticsService
                 break;
             case 'range':
                 $start = Carbon::parse($from)->format('Y-m-d');
-                $finish = Carbon::parse($to)->format('Y-m-d');
+                $finish = Carbon::parse($to)->addDay()->format('Y-m-d');
                 $query->whereBetween('created_at', [$start, $finish]);
                 break;
         }

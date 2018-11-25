@@ -24,7 +24,7 @@ class CallsForRange implements FromCollection, WithHeadings
         $this->to = $to;
     }
 
-                                                                                                                                                                                                            
+
     /**
      * @return array
      */
@@ -43,7 +43,7 @@ class CallsForRange implements FromCollection, WithHeadings
     public function collection()
     {
         $parsedFrom = Carbon::parse($this->from)->format('Y-m-d');
-        $parsedTo = Carbon::parse($this->to)->format('Y-m-d');
+        $parsedTo = Carbon::parse($this->to)->addDay()->format('Y-m-d');
 
         $calls = DB::table('calls')
             ->whereBetween('created_at', [$parsedFrom, $parsedTo])

@@ -48,13 +48,13 @@ class ClaimsForRange implements FromCollection, WithHeadings
     {
 
         $start = Carbon::parse($this->from)->format('Y-m-d');
-        $finish = Carbon::parse($this->to)->format('Y-m-d');
+        $finish = Carbon::parse($this->to)->addDay()->format('Y-m-d');
 
         $claims = Claim::with('problem')
             ->with('responsibleOrganization')
             ->whereBetween('created_at', [$start, $finish])
             ->get();
-        
+
         return $claims->map(function ($claim) {
 
             if ($claim->responsibleOrganization->isEmpty()) {

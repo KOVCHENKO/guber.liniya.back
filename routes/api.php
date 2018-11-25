@@ -90,3 +90,5 @@ Route::get(
 
 Route::post('/file/upload/{claim_id}', 'Util\UploadController@uploadSingleFile');
 Route::get('/file/download', 'Util\UploadController@downloadFile');
+
+
