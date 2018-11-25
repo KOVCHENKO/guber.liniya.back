@@ -9,6 +9,7 @@ class OrganizationService
 {
     protected $organizationRepository;
     protected $dispatchStatusProcessing;
+    protected $claimsPerPage = 10;
 
     public function __construct(OrganizationRepository $organizationRepository, 
         DispatchStatusProcessing $dispatchStatusProcessing)
@@ -17,8 +18,8 @@ class OrganizationService
         $this->dispatchStatusProcessing = $dispatchStatusProcessing;
     }
 
-    public function getClaimsToOrganization($id, $statusFilter, $search)
-    {
+    public function getClaimsToOrganization($id, $statusFilter, $search, $page)
+    {  
         // Фильтр dispatch_status
         $allStatus = $this->resolveStatus();
         $statusFilter = $this->dispatchStatusProcessing->establishDispatchStatusFilter($allStatus, $statusFilter);
@@ -26,6 +27,8 @@ class OrganizationService
         $organizationIdArray = $this->organizationRepository->getChildrenOrganization($id);
 
         return $this->organizationRepository->getClaimsToOrganizations(
+            $this->claimsPerPage,
+            $page,
             $organizationIdArray,
             $statusFilter,
             $search

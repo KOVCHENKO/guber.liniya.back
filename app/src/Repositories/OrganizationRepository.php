@@ -168,7 +168,7 @@ class OrganizationRepository
         return $arrayOrganizationsId;        
     }
 
-    public function getClaimsToOrganizations($organizationIdArray, $dispatchStatusFilter, $search) 
+    public function getClaimsToOrganizations($take, $page, $organizationIdArray, $dispatchStatusFilter, $search) 
     {
 
         $claims = collect();
@@ -199,8 +199,13 @@ class OrganizationRepository
                 ->get();
 
         });
-
-        return $claims->collapse();
+        $claims = $claims->collapse();
+        $count = $claims->count();
+        $claims = $claims->forPage($page, $take)->toArray();
+        return [ 
+            'count' => (int)ceil($count / $take),
+            'claims' => array_values($claims)
+        ];
     }
 
     /**

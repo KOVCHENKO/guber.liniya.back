@@ -104,7 +104,8 @@ class OrganizationController extends Controller
         return response($this->organizationService->getClaimsToOrganization(
             $id,
             $request->dispatchStatusFilter,
-            $request->search
+            $request->search,
+            $request->page
         ), 200);
     }
 
