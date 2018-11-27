@@ -124,6 +124,9 @@ class CallService
      */
     public function filterAndGet($take, $skip, $filterOptions)
     {
+        // Включая полностью день крайней границы
+        $filterOptions['to'] = Carbon::parse($filterOptions['to'])->addDay()->format('Y-m-d');
+
         switch ($filterOptions['dateFilter']) {
             case 'all':
                 return $this->callRepository->getAll($take, $skip);
