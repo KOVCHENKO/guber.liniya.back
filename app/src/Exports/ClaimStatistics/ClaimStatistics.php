@@ -28,11 +28,13 @@ class ClaimStatistics implements FromCollection, WithHeadings
     {
         return [
             'Дата/Время',
+            'Телефон',
             'ФИО',
             'Адрес',
             'Проблема',
             'Организация',
-            'Статус обработки'
+            'Статус обработки',
+            'Описание заявки'
         ];
     }
 
@@ -53,11 +55,13 @@ class ClaimStatistics implements FromCollection, WithHeadings
 
             return [
                 'created_at' => $claim->created_at,
+                'phone' => $claim->phone,
                 'lastname' => $claim->lastname.' '.$claim->firstname.' '.$claim->middlename,
                 'address' => $claim->address->district.' '.$claim->address->location,
                 'problem' => $claim->problem->name,
                 'organization' => $claim->responsibleOrganization[0]['name'],
-                'status' => TranslationService::translateClaimStatus($claim->status)
+                'status' => TranslationService::translateClaimStatus($claim->status),
+                'description' => $claim->description
             ];
         });
 
