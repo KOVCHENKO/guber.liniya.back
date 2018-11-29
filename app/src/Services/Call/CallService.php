@@ -173,8 +173,8 @@ class CallService
                 return ceil($this->callRepository->getPagesCountPerPeriod($start, $finish) / $this->paginator->itemsPerPage);
                 break;
             case 'period':
-                $start = $filterOptions['from'];
-                $finish = $filterOptions['to'];
+                $start = Carbon::parse($filterOptions['from'])->format('Y-m-d');
+                $finish = Carbon::parse($filterOptions['to'])->addDay()->format('Y-m-d');
                 return ceil($this->callRepository->getPagesCountPerPeriod($start, $finish) / $this->paginator->itemsPerPage);
                 break;
         }
