@@ -32,16 +32,16 @@ class CallsForPreviousDay implements FromCollection, WithHeadings
         $yesterday = Carbon::now()->subDay()->format('Y-m-d');
 
         $calls = DB::table('calls')
-            ->where('created_at', '=', $yesterday)
+            ->where('created_at', 'like', '%'.$yesterday.'%')
             ->count();
 
         $claims = DB::select(
             "SELECT count(*) as 'p_count' FROM `claims`
-                  WHERE call_id in (select id from calls where created_at = '".$yesterday."') AND pid IS NULL;");
+                  WHERE call_id in (select id from calls where created_at like '%".$yesterday."%') AND pid IS NULL;");
 
         $childClaims = DB::select(
             "SELECT count(*) as 'c_count' FROM `claims`
-                  WHERE call_id in (select id from calls where created_at = '".$yesterday."') AND pid IS NOT NULL;");
+                  WHERE call_id in (select id from calls where created_at like '%".$yesterday."%') AND pid IS NOT NULL;");
 
         return collect([
             [
