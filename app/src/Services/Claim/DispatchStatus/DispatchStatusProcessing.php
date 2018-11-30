@@ -82,7 +82,7 @@ class DispatchStatusProcessing
         if ($statusFilter == 'all' || $statusFilter == null) {
             return [NULL, 'created', 'assigned', 'executed', 'rejected'];
         } elseif ($statusFilter = 'aer') {
-            return ['assigned', 'executed', 'rejected'];
+            return ['created', 'assigned', 'executed', 'rejected'];
         }
 
         return [$statusFilter];
