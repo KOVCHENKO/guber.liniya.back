@@ -43,7 +43,9 @@ class ClaimStatistics implements FromCollection, WithHeadings
      */
     public function collection()
     {
-        $claims = $this->query->get();
+        $claims = $this->query
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return $claims->map(function ($claim) {
 

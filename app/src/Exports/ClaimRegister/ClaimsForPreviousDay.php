@@ -38,7 +38,7 @@ class ClaimsForPreviousDay implements FromCollection, WithHeadings
         $claims = Claim::with('problem')
             ->with('responsibleOrganization')
             ->where('created_at', 'like', '%'.$yesterday.'%')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return $claims->map(function ($claim) {

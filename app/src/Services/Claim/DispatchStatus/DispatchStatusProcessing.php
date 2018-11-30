@@ -75,11 +75,14 @@ class DispatchStatusProcessing
      * @param $statusFilter
      * @return array
      * Фильтр на статус обработки - все или никакие фильтры
+     * aer - собирательно: assigned, executed, rejected
      */
     public function establishStatusFilter($statusFilter)
     {
         if ($statusFilter == 'all' || $statusFilter == null) {
             return [NULL, 'created', 'assigned', 'executed', 'rejected'];
+        } elseif ($statusFilter = 'aer') {
+            return ['assigned', 'executed', 'rejected'];
         }
 
         return [$statusFilter];

@@ -39,9 +39,9 @@ class ClaimsForYear implements FromCollection, WithHeadings
         $claims = Claim::with('problem')
             ->with('responsibleOrganization')
             ->whereBetween('created_at', [$start, $finish])
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->get();
-        
+
         return $claims->map(function ($claim) {
 
             if ($claim->responsibleOrganization->isEmpty()) {
