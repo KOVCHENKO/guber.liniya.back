@@ -18,7 +18,7 @@ class OrganizationService
         $this->dispatchStatusProcessing = $dispatchStatusProcessing;
     }
 
-    public function getClaimsToOrganization($id, $statusFilter, $search, $page)
+    public function getClaimsToOrganization($id, $statusFilter, $search, $page, $sortByData)
     {  
         // Фильтр dispatch_status
         $allStatus = $this->resolveStatus();
@@ -31,7 +31,8 @@ class OrganizationService
             $page,
             $organizationIdArray,
             $statusFilter,
-            $search
+            $search,
+            $sortByData
         );
     }
 
