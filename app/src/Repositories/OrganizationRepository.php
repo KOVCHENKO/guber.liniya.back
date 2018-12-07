@@ -180,6 +180,7 @@ class OrganizationRepository
             $query = $item->claims()        // Берет заявки всех организаций
                 ->join('claims_organizations as co', 'claims.id', '=', 'co.claim_id')
                 ->with('address')
+                ->with('responsibleOrganization')
                 ->whereNotIn('status', ['rejected'])
                 ->whereIn('status', $dispatchStatusFilter)
                 ->where('co.visibility', '=', 'show');
