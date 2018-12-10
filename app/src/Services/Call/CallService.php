@@ -64,6 +64,10 @@ class CallService
      */
     private function makeCall($call)
     {
+        if (!isset($call['ext'])) {
+            $call['ext'] = '000';
+        }
+
         return $this->callRepository->create($call);
     }
 
