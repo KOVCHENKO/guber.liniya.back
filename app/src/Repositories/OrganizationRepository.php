@@ -168,7 +168,7 @@ class OrganizationRepository
         return $arrayOrganizationsId;        
     }
 
-    public function getClaimsToOrganizations($take, $page, $organizationIdArray, $dispatchStatusFilter, $search) 
+    public function getClaimsToOrganizations($take, $page, $organizationIdArray, $dispatchStatusFilter, $search, $sortByData) 
     {
 
         $claims = collect();
@@ -180,6 +180,7 @@ class OrganizationRepository
             $query = $item->claims()        // Берет заявки всех организаций
                 ->join('claims_organizations as co', 'claims.id', '=', 'co.claim_id')
                 ->with('address')
+                ->with('responsibleOrganization')
                 ->whereNotIn('status', ['rejected'])
                 ->whereIn('status', $dispatchStatusFilter)
                 ->where('co.visibility', '=', 'show');
@@ -200,6 +201,7 @@ class OrganizationRepository
 
         });
         $claims = $claims->collapse();
+        $claims = ($sortByData == 'desc') ?  $claims->sortByDesc('created_at') :  $claims->sortBy('created_at');
         $count = $claims->count();
         $claims = $claims->forPage($page, $take)->toArray();
         return [ 

@@ -105,7 +105,8 @@ class OrganizationController extends Controller
             $id,
             $request->dispatchStatusFilter,
             $request->search,
-            $request->page
+            $request->page,
+            $request->sortByData
         ), 200);
     }
 
