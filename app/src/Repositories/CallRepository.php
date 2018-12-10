@@ -4,6 +4,7 @@ namespace App\src\Repositories;
 
 
 use App\src\Models\Call;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class CallRepository
@@ -34,7 +35,7 @@ class CallRepository
         $newCall->ext = $call['ext'];
         $newCall->type = $call['type'];
         $newCall->processing_status = 'raw';
-//        $newCall->created_at = $call['start'];
+        $newCall->created_at = Carbon::parse($call['start'])->addHours(4)->format('Y-m-d H:i:s');
 
         $newCall->save();
 
