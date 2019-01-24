@@ -75,6 +75,11 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         Route::get('/mark_call_as_faulty/{call_id}', 'CallController@markCallAsFaulty');
     });
 
+    Route::prefix('/applicants')->namespace('Functional')->group(function() {
+        Route::post('/all/{page}', 'CallController@getAll');
+        Route::get('/mark_call_as_faulty/{call_id}', 'CallController@markCallAsFaulty');
+    });
+
 });
 
 Route::post('/calls/get_call', 'Functional\CallController@receive');
