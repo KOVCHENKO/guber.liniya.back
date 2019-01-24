@@ -14,6 +14,7 @@ class Admin implements RoleTypeInterface
         return [
             new Cabinet(1, 'Организация', 'all_organizations', 'all_organizations'),
             new Cabinet(2, 'Проблемы', 'all_problems', 'all_problems'),
+            new Cabinet(2, 'Роли', 'all_roles', 'all_roles'),
         ];
     }
 }
