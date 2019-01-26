@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Functional;
 
 
 use App\src\Services\Applicant\ApplicantService;
+use Illuminate\Http\Request;
 
 class ApplicantController
 {
@@ -27,6 +28,20 @@ class ApplicantController
     {
         try {
             return response($this->applicantService->getAll(), 200);
+        } catch (\Exception $ex) {
+            return response(['error' => $ex->getMessage()], 400);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * Создать заявителя
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function create(Request $request)
+    {
+        try {
+            return response ($this->applicantService->create($request), 200);
         } catch (\Exception $ex) {
             return response(['error' => $ex->getMessage()], 400);
         }
