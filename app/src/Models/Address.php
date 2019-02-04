@@ -10,6 +10,6 @@ class Address extends Model
     protected $table = 'addresses';
 
     protected $fillable = [
-        'district', 'location'
+        'district', 'city', 'street', 'building'
     ];
 }

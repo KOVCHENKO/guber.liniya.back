@@ -8,7 +8,6 @@ use App\src\Repositories\CallRepository;
 use App\src\Services\Util\Pagination;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class CallService
@@ -19,6 +18,7 @@ class CallService
     /**
      * CallService constructor.
      * @param CallRepository $callRepository
+     * @param Pagination $paginator
      */
     public function __construct(CallRepository $callRepository, Pagination $paginator)
     {

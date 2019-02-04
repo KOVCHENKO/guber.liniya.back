@@ -5,6 +5,7 @@ namespace App\src\Services\Applicant;
 
 use App\src\Repositories\AddressRepository;
 use App\src\Repositories\ApplicantRepository;
+use Illuminate\Http\Request;
 
 class ApplicantService
 {
@@ -36,17 +37,24 @@ class ApplicantService
      * Создать заявителя
      * @return \Illuminate\Http\Request
      */
-    public function create(\Illuminate\Http\Request $request)
+    public function create(Request $request)
     {
-        return $request;
-
         // 1. Создать адрес
         $address = $this->addressRepository->create([
-            'district' => $request['address']['district'],
-            'location' => $request['address']['location']
+            'district' => $request['address']['city'],
+            'city' => $request['address']['city'],
+            'street' => $request['address']['street'],
+            'building' => $request['address']['building']
         ]);
 
         // 2. Создать заявителя
-        $this->applicantRepository->create($request);
+        return $this->applicantRepository->create([
+            'firstname' => $request['firstname'],
+            'lastname' => $request['lastname'],
+            'middlename' => $request['middlename'],
+            'phone' => $request['phone'],
+            'email' => $request['email'],
+            'address_id' => $address->id
+        ]);
     }
 }

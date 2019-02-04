@@ -25,4 +25,10 @@ class ApplicantRepository
     {
         return $this->applicant->get();
     }
+
+
+    public function create($data)
+    {
+        return $this->applicant->create($data);
+    }
 }
