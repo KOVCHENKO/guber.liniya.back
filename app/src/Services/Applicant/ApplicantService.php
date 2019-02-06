@@ -5,31 +5,57 @@ namespace App\src\Services\Applicant;
 
 use App\src\Repositories\AddressRepository;
 use App\src\Repositories\ApplicantRepository;
+use App\src\Services\Util\Pagination;
 use Illuminate\Http\Request;
 
 class ApplicantService
 {
     protected $applicantRepository;
     protected $addressRepository;
+    protected $paginator;
 
     /**
      * ApplicantService constructor.
      * @param ApplicantRepository $applicantRepository
      * @param AddressRepository $addressRepository
+     * @param Pagination $pagination
      */
     public function __construct(ApplicantRepository $applicantRepository,
-                                AddressRepository $addressRepository)
+                                AddressRepository $addressRepository,
+                                Pagination $pagination)
     {
         $this->applicantRepository = $applicantRepository;
         $this->addressRepository = $addressRepository;
+        $this->paginator = $pagination;
     }
 
     /**
      * Получить всех заявителей
+     * @param $page - необходимая страница
+     * @param $request - search: строка запроса
+     * @return array - возвращает массив заявителей
      */
-    public function getAll()
+    public function getAll($page, $request)
     {
-        return $this->applicantRepository->getAll();
+        if($request->search == '') {
+            $applicants = $this->applicantRepository->getAll(
+                $this->paginator->itemsPerPage,
+                $this->paginator->getSkippedItems($page)
+            );
+        } else {
+            $applicants = $this->applicantRepository->search(
+                $this->paginator->itemsPerPage,
+                $this->paginator->getSkippedItems($page),
+                $request->search
+            );
+        }
+
+        $pages = $this->applicantRepository->getPagesCount();
+
+        return [
+            'applicants' => $applicants,
+            'pages' => $this->paginator->getPagesQuantity($pages)
+        ];
     }
 
     /**

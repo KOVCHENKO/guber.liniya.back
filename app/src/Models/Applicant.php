@@ -5,6 +5,10 @@ namespace App\src\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method create($data)
+ * @method count()
+ */
 class Applicant extends Model
 {
     protected $table = 'applicants';

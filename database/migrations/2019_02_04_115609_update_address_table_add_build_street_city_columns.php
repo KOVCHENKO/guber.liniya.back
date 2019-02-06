@@ -30,6 +30,9 @@ class UpdateAddressTableAddBuildStreetCityColumns extends Migration
     {
         Schema::table('addresses', function (Blueprint $table) {
             $table->string('location');
+            $table->dropColumn('city');
+            $table->dropColumn('street');
+            $table->dropColumn('building');
         });
     }
 }

@@ -76,7 +76,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     });
 
     Route::prefix('/applicants')->namespace('Functional')->group(function() {
-        Route::get('/all', 'ApplicantController@getAll');
+        Route::post('/all/{page}', 'ApplicantController@getAll');
         Route::post('/create', 'ApplicantController@create');
     });
 

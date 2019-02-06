@@ -21,13 +21,15 @@ class ApplicantController
     }
 
     /**
+     * @param Request $request - search: строка запроса
+     * @param int $page - номер страницы
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * Получить всех заявителей
      */
-    public function getAll()
+    public function getAll(Request $request, int $page)
     {
         try {
-            return response($this->applicantService->getAll(), 200);
+            return response($this->applicantService->getAll($page, $request), 200);
         } catch (\Exception $ex) {
             return response(['error' => $ex->getMessage()], 400);
         }

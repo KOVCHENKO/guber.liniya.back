@@ -38,7 +38,7 @@ class ApplicantControllerTest extends TestCase
     /** @test */
     public function applicants_can_be_fetched()
     {
-        $response = $this->call('GET', $this->baseUrl.'all');
+        $response = $this->call('POST', $this->baseUrl.'all/3');
 
         $this->assertEquals(200, $response->getStatusCode());
     }
