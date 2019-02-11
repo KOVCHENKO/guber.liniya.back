@@ -11,17 +11,14 @@ use Illuminate\Support\Collection;
 class NewClaim implements PIDClaimInterface
 {
     protected $claimRepository;
-    protected $addressRepository;
     protected $organizationRepository;
 
     public function __construct(
         ClaimRepository $claimRepository,
-        AddressRepository $addressRepository,
         OrganizationRepository $organizationRepository
     )
     {
         $this->claimRepository = $claimRepository;
-        $this->addressRepository = $addressRepository;
         $this->organizationRepository = $organizationRepository;
     }
 
@@ -29,24 +26,15 @@ class NewClaim implements PIDClaimInterface
     {
         $responsibleOrganizations =  $this->getOrganizationsRelatedToProblem($data['problem']['id']);
 
-        $address = $this->addressRepository->create([
-            'district' => $data['address']['district'],
-            'location' => $data['address']['location']
-        ]);
-
-        $responsibleOrganizations->map(function ($organization) use ($data, $address) {
+        $responsibleOrganizations->map(function ($organization) use ($data) {
 
             $newClaim = $this->claimRepository->create([
-                'firstname' =>  $data['firstName'],
-                'lastname' =>  $data['lastName'],
-                'middlename' =>  $data['middleName'],
                 'name' => $data['call']['callId'],
                 'description' =>  $data['description'],
                 'link' => $data['call']['link'],
                 'ats_status' => $data['call']['atsStatus'],
                 'phone' => $data['phone'],
-                'email' =>  $data['email'],
-                'address_id' => $address['id'],
+                'address_id' => $data['applicant']['address_id'],
                 'call_id' => $data['call']['id'],
                 'problem_id' => $data['problem']['id'],
                 'level' => $data['level'],
