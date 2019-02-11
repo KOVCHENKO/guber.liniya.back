@@ -27,11 +27,11 @@ class DispatchStatusProcessing
     public function resolveDispatchStatus($dispatchStatus)
     {
         switch ($dispatchStatus) {
-            case 'all':             // для диспетчера
+            case 'all':
                 return ['raw', 'edited', 'dispatched', 'prepared'];
                 break;
-            case 'prepared':        // для редактора
-                return ['prepared', 'edited'];
+            case 'prepared':        // для диспетчера (вкладка "созданные заявки")
+                return ['prepared'];
                 break;
             case 'edited':          // для супервизора-отправителя
                 return ['edited', 'dispatched'];
