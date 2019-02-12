@@ -164,7 +164,7 @@ class OrganizationRepository
                      `organizations` WHERE FIND_IN_SET(`pid`, @Ids) ) Level FROM 
                      `organizations` JOIN (SELECT @Ids := ?) temp1 ) temp2", [$organizationId]);
         $arrayOrganizationsId = explode(',', $organizationsId[0]->idOrg);
-        $arrayOrganizationsId[] = $organizationId;
+        // $arrayOrganizationsId[] = $organizationId;
         return $arrayOrganizationsId;        
     }
 
