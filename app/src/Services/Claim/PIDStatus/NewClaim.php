@@ -3,6 +3,7 @@
 namespace App\src\Services\Claim\PIDStatus;
 
 
+use App\Events\Claim\NewClaimEvent;
 use App\src\Repositories\AddressRepository;
 use App\src\Repositories\ClaimRepository;
 use App\src\Repositories\OrganizationRepository;
@@ -45,6 +46,8 @@ class NewClaim implements PIDClaimInterface
 
             $this->claimRepository->assignClaimToResponsibleOrganization($newClaim, $organization->id, 'hide');
         });
+
+        event(new NewClaimEvent());
     }
 
     /**
