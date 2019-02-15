@@ -32,6 +32,8 @@ Route::group(['middleware' => 'jwt.auth'], function () {
             ->middleware('role:specialist');
         Route::get('all_children_organization/{organization_id}', 'OrganizationController@getChildOrganization')
             ->middleware('role:specialist');
+        Route::get('all_claims_of_children_organization/{organization_id}', 'OrganizationController@getClaimsToChildrenOrganization')
+            ->middleware('role:specialist');
     });
 
     Route::prefix('/problem_types/')->namespace('Functional')->middleware('role:admin')->group(function(){
@@ -56,6 +58,8 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         Route::post('get_previous_by_phone', 'ClaimController@getPreviousByPhone')->middleware('role:dispatcher,editor,supervisor');
         Route::get('change_close_status/{claim_id}/{close_status}', 'ClaimController@changeCloseStatus')->middleware('role:communicator');
         Route::get('reassign_rejected_claim/{organization_id}/{claim_id}', 'ClaimController@reassignRejectedClaim')->middleware('role:dispatcher,editor,supervisor');
+        Route::get('get_claims_subcontractors/{organization_id}', 'SubcontractorController@getClaimsSubcontractors')->middleware('role:specialist');
+        Route::get('update_subcontractor/{id}', 'SubcontractorController@updateSubcontractor')->middleware('role:specialist');
     });
 
     Route::prefix('/specialists/')->namespace('Functional')->middleware('role:specialist,admin')->group(function() {
