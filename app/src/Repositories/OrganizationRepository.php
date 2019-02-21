@@ -173,8 +173,10 @@ class OrganizationRepository
 
     public function getClaimsToOrganization2($id, $data, $take, $page)
     {
+        // Получить все заявки
         $this->claim->getAll($id);
         
+        // Фильтры
         if (!empty($data['status'])) {
             $this->claim->byStatus($data['status']);
         }
@@ -193,14 +195,17 @@ class OrganizationRepository
             $maxDate = !empty($data['maxDate']) ? $data['maxDate'] : null;
             $this->claim->byDate($minDate, $maxDate);
         }
-        if (!empty($data['column']) && !empty($data['direction'])) {
-            $this->claim->bySort($data['column'], $data['direction']);
+
+        $this->claim->render();
+        
+        // Сортировка
+        if (!empty($data['field']) && !empty($data['direction'])) {
+            $this->claim->bySort($data['field'], $data['direction']);
         }
 
         return [ 
             'count' => $this->claim->countPage($take),
-            // TODO: get
-            'claims' => $this->claim->forPage($page, $take)->get()
+            'claims' => $this->claim->forPage($page, $take)
         ];
 
     }

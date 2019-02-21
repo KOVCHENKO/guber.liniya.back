@@ -69,10 +69,10 @@ class ClaimsByOrganizationRepository
     public function byDate($minDate, $maxDate)
     {
         if(empty($minDate) && !empty($maxDate)) {
-            $this->claims->where('claims.updated_at', '<=', $maxDate);
+            $this->claims->where('claims.created_at', '<=', $maxDate);
         } 
         elseif(!empty($minDate) && empty($maxDate)) {
-            $this->claims->where('claims.updated_at', '>=', $minDate);
+            $this->claims->where('claims.created_at', '>=', $minDate);
         }
         else {
             $this->claims->whereBetween('claims.created_at', [$minDate, $maxDate]);
@@ -80,14 +80,49 @@ class ClaimsByOrganizationRepository
     }
 
     // Сортировка
-    public function bySort($column, $direction = 'asc')
-    {
-        $this->claims->orderBy($column, $direction);
+    public function bySort($field, $direction = 'asc')
+    {   
+        $funcname = ($direction == 'asc') ?  'sortBy' : 'sortByDesc';
+
+        if ($field == 'date') {
+
+            $sorted = $this->claims->$funcname(function ($product, $key) {
+                return $product->created_at;
+            })->values();
+
+            $this->claims = $sorted;
+        }
+        elseif ($field == 'initials') {
+
+            $sorted = $this->claims->$funcname(function ($product, $key) {
+                return $product->applicant['firstname'] . $product->applicant['middlename'] . 
+                    $product->applicant['lastname'];
+            })->values();
+
+            $this->claims = $sorted;
+        }
+        elseif ($field == 'phone') {
+
+            $sorted = $this->claims->$funcname(function ($product, $key) {
+                return $product->applicant['phone'];
+            })->values();
+
+            $this->claims = $sorted;
+        }
+        elseif ($field == 'address') {
+
+            $sorted = $this->claims->$funcname(function ($product, $key) {
+                return $product->address['city'] . $product->address['district'] .
+                    $product->address['street'] . $product->address['building'];
+            })->values();
+
+            $this->claims = $sorted;
+        }
     }
 
     public function render()
     {
-        return $this->claims->get();
+        $this->claims = $this->claims->get();
     }
 
     public function countPage($take)
@@ -98,6 +133,11 @@ class ClaimsByOrganizationRepository
     public function forPage($page, $take)
     {
         return $this->claims->forPage($page, $take);
+    }
+
+    public function get()
+    {
+        return $this->claims;
     }
 
 }
