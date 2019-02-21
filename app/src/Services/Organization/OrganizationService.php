@@ -36,6 +36,12 @@ class OrganizationService
         );
     }
 
+    public function getClaimsToOrganization2($id, $data)
+    {  
+        $page = !empty($data['page']) ? $data['page'] : 1;
+        return $this->organizationRepository->getClaimsToOrganization2($id, $data, $this->claimsPerPage, $page);
+    }
+
     public function getClaimsToChildrenOrganization($id, $statusFilter, $search, $page, $sortByData)
     {  
         // Фильтр dispatch_status

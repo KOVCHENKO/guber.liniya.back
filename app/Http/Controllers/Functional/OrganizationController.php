@@ -101,14 +101,22 @@ class OrganizationController extends Controller
      */
     public function getClaimsToOrganization(Request $request, $id)
     {        
-        return response($this->organizationService->getClaimsToOrganization(
+        return response($this->organizationService->getClaimsToOrganization2(
             $id,
-            $request->dispatchStatusFilter,
-            $request->search,
-            $request->page,
-            $request->sortByData
+            $request->all()
         ), 200);
     }
+
+    // public function getClaimsToOrganization(Request $request, $id)
+    // {        
+    //     return response($this->organizationService->getClaimsToOrganization(
+    //         $id,
+    //         $request->dispatchStatusFilter,
+    //         $request->search,
+    //         $request->page,
+    //         $request->sortByData
+    //     ), 200);
+    // }
 
     /**
      * @param $id - ид организации
