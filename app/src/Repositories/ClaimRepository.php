@@ -43,6 +43,7 @@ class ClaimRepository
             ->with('comments')
             ->with('files')
             ->with('responsibleOrganization')
+            ->with('applicant')
             ->take($take)
             ->skip($skip)
             ->whereIn('close_status', $closeStatus)
@@ -130,21 +131,18 @@ class ClaimRepository
      * @param $resolvedDispatchStatus
      * @param $resolvedCloseStatus
      * @param $resolvedStatus
+     * @param $search
      * @return mixed
      * Получить кол-во страниц для поиска
      */
     public function getPagesCountForSearch($resolvedDispatchStatus, $resolvedCloseStatus, $resolvedStatus, $search)
     {
-        return $this->claim
-            ->whereIn('dispatch_status', $resolvedDispatchStatus)
-            ->whereIn('close_status', $resolvedCloseStatus)
-            ->whereIn('status', $resolvedStatus)
-            ->where(function ($query) use ($search) {
-                $query->where('firstname', 'like', '%'.$search.'%')
-                    ->orWhere('lastname', 'like', '%'.$search.'%')
-                    ->orWhere('middlename', 'like', '%'.$search.'%')
-                    ->orWhere('phone', 'like', '%'.$search.'%');
-            })
+        return DB::table('claims')
+            ->join('applicants', 'applicants.id', '=', 'claims.applicant_id')
+            ->whereIn('claims.dispatch_status', $resolvedDispatchStatus)
+            ->whereIn('claims.close_status', $resolvedCloseStatus)
+            ->whereIn('claims.status', $resolvedStatus)
+            ->where('applicants.phone', 'like', '%'.$search['phone'].'%')
             ->count();
     }
 
@@ -157,17 +155,14 @@ class ClaimRepository
             ->with('comments')
             ->with('files')
             ->with('responsibleOrganization')
+            ->with(array('applicant' => function($query) use ($search) {
+                $query->where('phone', 'like', '%'.$search['phone'].'%');
+            }))
             ->take($take)
             ->skip($skip)
             ->whereIn('dispatch_status', $resolvedDispatchStatus)
             ->whereIn('status', $status)
             ->whereIn('close_status', $closeStatus)
-            ->where(function ($query) use ($search) {
-                $query->where('firstname', 'like', '%'.$search.'%')
-                    ->orWhere('lastname', 'like', '%'.$search.'%')
-                    ->orWhere('middlename', 'like', '%'.$search.'%')
-                    ->orWhere('phone', 'like', '%'.$search.'%');
-            })
             ->orderBy($sortBy, $sortDirection)
             ->get();
     }

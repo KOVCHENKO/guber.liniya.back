@@ -154,9 +154,13 @@ class ClaimService
 
     /**
      * @param $page - страница
-     * @param $search - поиск (строка)
+     * @param $search - массив параметров для поиска
      * @param $dispatchStatus - все, отредактированные, для отправки
      * @param $dispatchStatusFilter - фильтр статуса диспетчера
+     * @param $statusFilter - статус исполнителя
+     * @param $closeStatusFilter - статус выполненности заявки
+     * @param $sortBy
+     * @param $sortDirection
      * @return array
      */
     public function search($page, $search, $dispatchStatus, $dispatchStatusFilter, $statusFilter, $closeStatusFilter, $sortBy, $sortDirection)
@@ -192,6 +196,11 @@ class ClaimService
         $claims->map(function(&$claim) {
             $claim->expired = $this->checkIfClaimIsExpired($claim);
         });
+
+        // Отфильтровать заявки по наличию заявителя и выстроить ключи сначала
+        $claims = $claims->reject(function(&$claim) {
+            return !$claim->applicant;
+        })->values();
 
         return [
             'claims' => $claims,
