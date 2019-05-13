@@ -71,4 +71,13 @@ class Claim extends Model
     {
         return $this->hasMany(File::class);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Адрес, привязанный к заявке
+     */
+    public function applicant()
+    {
+        return $this->belongsTo(Applicant::class, 'applicant_id');
+    }
 }

@@ -101,7 +101,31 @@ class OrganizationController extends Controller
      */
     public function getClaimsToOrganization(Request $request, $id)
     {        
-        return response($this->organizationService->getClaimsToOrganization(
+        return response($this->organizationService->getClaimsToOrganization2(
+            $id,
+            $request->all()
+        ), 200);
+    }
+
+    // public function getClaimsToOrganization(Request $request, $id)
+    // {        
+    //     return response($this->organizationService->getClaimsToOrganization(
+    //         $id,
+    //         $request->dispatchStatusFilter,
+    //         $request->search,
+    //         $request->page,
+    //         $request->sortByData
+    //     ), 200);
+    // }
+
+    /**
+     * @param $id - ид организации
+     * Получить все зявки, которые пренадлежат дочерним организациям
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getClaimsToChildrenOrganization(Request $request, $id)
+    {
+        return response($this->organizationService->getClaimsToChildrenOrganization(
             $id,
             $request->dispatchStatusFilter,
             $request->search,

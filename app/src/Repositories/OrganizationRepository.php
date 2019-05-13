@@ -4,20 +4,23 @@ namespace App\src\Repositories;
 
 
 use App\src\Models\Organization;
+use App\src\Models\Claim;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 
 class OrganizationRepository
 {
     protected $organization;
+    protected $claim;
 
     /**
      * OrganizationRepository constructor.
      * @param Organization $organization
      */
-    public function __construct(Organization $organization)
+    public function __construct(Organization $organization, ClaimsByOrganizationRepository $claim)
     {
         $this->organization = $organization;
+        $this->claim = $claim;
     }
 
     /**
@@ -164,8 +167,47 @@ class OrganizationRepository
                      `organizations` WHERE FIND_IN_SET(`pid`, @Ids) ) Level FROM 
                      `organizations` JOIN (SELECT @Ids := ?) temp1 ) temp2", [$organizationId]);
         $arrayOrganizationsId = explode(',', $organizationsId[0]->idOrg);
-        $arrayOrganizationsId[] = $organizationId;
+        // $arrayOrganizationsId[] = $organizationId;
         return $arrayOrganizationsId;        
+    }
+
+    public function getClaimsToOrganization2($id, $data, $take, $page)
+    {
+        // Получить все заявки
+        $this->claim->getAll($id);
+        
+        // Фильтры
+        if (!empty($data['status'])) {
+            $this->claim->byStatus($data['status']);
+        }
+        if (!empty($data['initials'])) {
+            $this->claim->byInitials($data['initials']);
+        }
+        if (!empty($data['phone'])) {
+            $this->claim->byPhone($data['phone']);
+        }
+        if (!empty($data['address'])) {
+            $this->claim->byAddress($data['address']);
+        }
+        if (!empty($data['minDate']) || !empty($data['maxDate'])) {
+            // TODO: 
+            $minDate = !empty($data['minDate']) ? $data['minDate'] : null;
+            $maxDate = !empty($data['maxDate']) ? $data['maxDate'] : null;
+            $this->claim->byDate($minDate, $maxDate);
+        }
+
+        $this->claim->render();
+        
+        // Сортировка
+        if (!empty($data['field']) && !empty($data['direction'])) {
+            $this->claim->bySort($data['field'], $data['direction']);
+        }
+
+        return [ 
+            'count' => $this->claim->countPage($take),
+            'claims' => $this->claim->forPage($page, $take)
+        ];
+
     }
 
     public function getClaimsToOrganizations($take, $page, $organizationIdArray, $dispatchStatusFilter, $search, $sortByData) 

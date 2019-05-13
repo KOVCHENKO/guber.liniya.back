@@ -28,13 +28,28 @@ class AddressRepository
         return $this->address->create($address);
     }
 
+    /**
+     * @param $address
+     * Обновтиь адрес
+     */
     public function update($address)
     {
         $addressToUpdate = $this->address->find($address['address_id']);
         $addressToUpdate->district = $address['district'];
         $addressToUpdate->location = $address['location'];
-
     }
+
+    /**
+     * @param $id
+     * Получить адрес по id
+     * @return Address
+     */
+    public function getById(int $id): Address
+    {
+        return $this->address->find($id);
+    }
+
+
 
 
 }
